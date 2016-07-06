@@ -1,0 +1,6 @@
+- [x] pliny template
+- [x] prune pliny
+- [ ] task.rb
+- [ ] worker/tick
+- [ ] jsonb/attr parser
+- [ ] decorated json

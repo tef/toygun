@@ -8,3 +8,7 @@ end
 DB = Sequel.connect(Config.database_url,
   max_connections: Config.db_pool,
   after_connect: database_setup_proc)
+
+DB.extension :pg_array, :pg_json
+DB.extend Sequel::Postgres::PGArray::DatabaseMethods
+DB.extend Sequel::Postgres::JSONDatabaseMethods

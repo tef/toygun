@@ -22,6 +22,15 @@ Pliny::Utils.require_glob("#{Config.root}/spec/spec_support/**/*.rb")
 
 require_relative "../lib/initializer"
 
+begin
+  require "sequel/extensions/migration"
+  Sequel::Migrator.check_current(Sequel::Model.db, 'db/migrate')
+rescue Sequel::Migrator::Error => e
+  unless e.message =~ /No target version available/
+    abort("Test database is not up-to-date, please run: bundle exec rake db:setup")
+  end
+end
+
 RSpec.configure do |config|
   config.before :suite do
     DatabaseCleaner.clean_with(:truncation)
@@ -40,10 +49,15 @@ RSpec.configure do |config|
     DatabaseCleaner.clean
   end
 
+  config.expect_with :rspec do |expectations|
+    expectations.include_chain_clauses_in_custom_matcher_descriptions = true
+  end
+
   config.disable_monkey_patching!
   config.expect_with :minitest
   config.run_all_when_everything_filtered = true
   config.filter_run :focus
+  config.expose_dsl_globally = true
 
   # Run specs in random order to surface order dependencies. If you find an
   # order dependency and want to debug it, you can fix the order by providing

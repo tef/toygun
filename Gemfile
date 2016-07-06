@@ -30,4 +30,5 @@ group :test do
   gem "dotenv"
   gem "rack-test"
   gem "rspec"
+  gem "rspec-its"
 end

@@ -12,6 +12,7 @@ module Initializer
 
   def self.require_lib
     require! %w(
+      lib/toygun
       lib/endpoints/base
       lib/endpoints/**/*
       lib/routes
@@ -21,6 +22,7 @@ module Initializer
   def self.require_models
     require! %w(
       lib/models/**/*
+      lib/subtasks
     )
   end
 
