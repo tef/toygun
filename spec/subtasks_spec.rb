@@ -107,17 +107,17 @@ describe Toygun::Task do
     end
 
     it 'should be running when started' do
-      dummy.test_task.start
+      dummy.test
       expect(dummy.test_task.running?).to be_truthy
     end
 
     it 'should take args, and reset them on start' do
-      dummy.test_task.update(attrs: {}, state: 'stop')
-      dummy.test_task.start a: '1'
-      expect(dummy.test_task.attrs).to eq({"a" => '1'})
       dummy.test_task.stop
-      dummy.test_task.start b: '1'
-      expect(dummy.test_task.attrs).to eq({"b" => '1'})
+      dummy.test a: '1'
+      expect(dummy.test_task.attrs.to_h).to eq({"a" => '1'})
+      dummy.test_task.stop
+      dummy.test b: '1'
+      expect(dummy.test_task.attrs.to_h).to eq({"b" => '1'})
     end
     it 'should take args' do
       dummy.test_task.update(attrs: {})
@@ -147,7 +147,7 @@ describe Toygun::Task do
     end
 
     it 'should tick' do
-      dummy.test_task.start
+      dummy.test
       expect(dummy.test_task.state).to eq("beginning")
       dummy.test_task.tick
       expect(dummy.test_task.state).to eq("middle")

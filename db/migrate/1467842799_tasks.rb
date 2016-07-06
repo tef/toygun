@@ -9,6 +9,9 @@ Sequel.migration do
 
       jsonb :attrs
 
+      timestamptz :created_at
+      timestamptz :updated_at
+
       index :foreign_uuid
       index [:foreign_uuid, :name]
       index [:foreign_uuid, :name, :state]
@@ -23,7 +26,6 @@ Sequel.migration do
       String :to
 
       timestamptz :created_at
-      timestamptz :updated_at
 
       index :task_uuid
       index :created_at

@@ -14,24 +14,23 @@ module Toygun
     end
   end
 
-   class DesynchronizedTaskStateException < StandardError
-      def initialize(opts)
-        @uuid = opts.delete(:uuid)
-        @expected = opts.delete(:expected)
-        @actual = opts.delete(:actual)
-      end
+  class DesynchronizedTaskStateException < StandardError
+     def initialize(opts)
+       @uuid = opts.delete(:uuid)
+       @expected = opts.delete(:expected)
+       @actual = opts.delete(:actual)
+     end
 
-      def message
-        "Expected stateful object #{@uuid} to be in #{@expected}; it has already transitioned to #{@actual}"
-      end
-    end
-
-
+     def message
+       "Expected stateful object #{@uuid} to be in #{@expected}; it has already transitioned to #{@actual}"
+     end
+  end
 
   class Task < Sequel::Model
     plugin :single_table_inheritance, :name
+    plugin :timestamps, update_on_create: true
 
-    one_to_many :task_transitions, key: :task_uuid, primary_key: :uuid, order: Sequel.desc(:updated_at)
+    one_to_many :task_transitions, key: :task_uuid, primary_key: :uuid, order: Sequel.desc(:created_at)
 
     def_dataset_method :active do
       exclude(state: "stop")
@@ -52,15 +51,10 @@ module Toygun
       end
     end
 
-    def start(opts={})
-      if state == "stop" || state == "panic"
-        reset opts
+    def start(**opts)
+      if state == "new"
+        transition self.class.task_states.first[0], opts
       end
-    end
-
-    def reset(opts={})
-      self.attrs = {}
-      transition self.class.task_states.first[0], opts
     end
 
     def stop
@@ -85,7 +79,7 @@ module Toygun
       end
     end
 
-    def transition(new_state, opts={})
+    def transition(new_state, **opts)
       current_state = state
       raise MissingTaskState, new_state if !["panic", "stop"].include?(new_state) && !self.class.task_states[new_state]
       Toygun::Task.db.transaction do
@@ -117,9 +111,49 @@ module Toygun
       t.class_eval &block
       t
     end
+
+    def self.find_recent_for(parent)
+      self.where(foreign_uuid: parent.uuid).order_by(Sequel.desc(:created_at, nulls: :last)).first
+    end
+
+    def self.find_or_create_for(parent)
+      self.db.transaction do
+        if Subtasks.pg_try_advisory_xact_lock(self, parent.uuid)
+          task = self.where(foreign_uuid: parent.uuid).order_by(Sequel.desc(:created_at, nulls: :last)).first
+          if task.nil?
+            task = self.create(foreign_uuid: parent.uuid) do |t|
+              t.state = "stop"
+              t.attrs = {}
+            end
+          end
+          task
+        end
+      end
+    end
+
+    def self.start_for(parent, **opts)
+      db.transaction do
+        if Subtasks.pg_try_advisory_xact_lock(self, parent.uuid)
+          task = self.where(foreign_uuid: parent.uuid).exclude(state: 'stop').order_by(Sequel.desc(:created_at, nulls: :last)).first
+          if task.nil?
+            task = self.create(foreign_uuid: parent.uuid) do |t|
+              t.state = "new"
+              t.attrs = opts
+            end
+            task.start
+          end
+          task
+        end
+      end
+    end
   end
 
   module Subtasks
+    def self.pg_try_advisory_xact_lock(klass, key)
+      lock_a, lock_b = [Zlib.crc32("#{klass.table_name}"),Zlib.crc32("#{key}")].pack('LL').unpack('ll')
+      Task.db["SELECT pg_try_advisory_xact_lock(CAST(#{lock_a} as int),CAST(#{lock_b} as int))"].get
+    end
+
     module ClassMethods
       def task(name, &block)
         class_name = name.to_s.split(/_/).map{ |word| word.capitalize }.join('').sub("!","")
@@ -128,14 +162,13 @@ module Toygun
         t = Task.define_task_on(self, class_name, &block)
         class_eval do
           define_method(name.to_s+"_task") do
-            t.find_or_create(foreign_uuid: self.uuid) {|task| task.state = "stop"; task.attrs = {} }
+            t.find_or_create_for(self)
           end
-          define_method(name) do |opts={}|
-            task = t.find_or_create(foreign_uuid: self.uuid) {|task| task.state = "stop"; task.attrs = {}}
-            task.start opts
+          define_method(name) do |**opts|
+            task = t.start_for(self, **opts)
           end
           define_method(name.to_s+"_running?") do
-            task = t.find(foreign_uuid: self.uuid)
+            task = t.find_recent_for(self)
             task && task.running?
           end
         end
