@@ -13,8 +13,15 @@ Sequel.migration do
       timestamptz :updated_at
 
       index :foreign_uuid
-      index [:foreign_uuid, :name]
+
+      index [:created_at]
+      index [:updated_at]
+      index [:name, :updated_at, :state]
+
       index [:foreign_uuid, :name, :state]
+
+      index [:foreign_uuid, :name], where: "state <> 'stop'", unique:true
+      index [:foreign_uuid, :name], name: "foreign_uuid_name_all_index"
     end
 
     create_table :task_transitions do
