@@ -1,0 +1,18 @@
+{
+  "name": "toygun",
+  "description": "A new instance of toygun",
+
+  "env": {
+    "APP_NAME": "toygun",
+    "DEPLOYMENT": "production",
+    "PLINY_ENV": "production"
+  },
+
+  "scripts": {
+    "postdeploy": "bundle exec rake db:schema:load db:migrate"
+  },
+
+  "addons": [
+    "heroku-postgresql"
+  ]
+}
