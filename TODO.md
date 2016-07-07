@@ -5,22 +5,29 @@
 - [x] indexes
 - [x] **args
 - [x] fix race condition in transition
+- [x] s/foreign/parent
 
-tasks
+bugs
 - [ ] task.start race from new to first state
-- [ ] use upserts
 
 statable
+- [ ] split out files, duplicate logic (state.rb, resource.rb, task.rb)
+- [ ] statable
+- [ ] redis
+- [ ] try exclusively
+- [ ] worker / clock
 - [ ] statable / clock / redis / statable.try_exclusively
 
 automata
-- [ ] s/foreign/parent
 - [ ] __internal__ states / __internal__ config
+- [ ] def_task
 - [ ] subclasses lookup/fixes
 - [ ] timeouts, panics, NEW
-- [ ] jsonb/attr parser
+- [ ] jsonb/attr parser/schema
 - [ ] panic_state/stop_state
-- [ ] fernet
+- [ ] fernet encrypt/decrypt
+- [ ] use upserts
+- [ ] datasets
 
 - browser
 - [ ] decorated json api

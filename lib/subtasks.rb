@@ -114,15 +114,15 @@ module Toygun
     end
 
     def self.find_recent_for(parent)
-      self.where(foreign_uuid: parent.uuid).order_by(Sequel.desc(:created_at, nulls: :last)).first
+      self.where(parent_uuid: parent.uuid).order_by(Sequel.desc(:created_at, nulls: :last)).first
     end
 
     def self.find_or_create_for(parent)
       self.db.transaction do
         if Subtasks.pg_try_advisory_xact_lock(self, parent.uuid)
-          task = self.where(foreign_uuid: parent.uuid).order_by(Sequel.desc(:created_at, nulls: :last)).first
+          task = self.where(parent_uuid: parent.uuid).order_by(Sequel.desc(:created_at, nulls: :last)).first
           if task.nil?
-            task = self.create(foreign_uuid: parent.uuid) do |t|
+            task = self.create(parent_uuid: parent.uuid) do |t|
               t.state = "stop"
               t.attrs = {}
             end
@@ -135,9 +135,9 @@ module Toygun
     def self.start_for(parent, **opts)
       db.transaction do
         if Subtasks.pg_try_advisory_xact_lock(self, parent.uuid)
-          task = self.where(foreign_uuid: parent.uuid).exclude(state: 'stop').order_by(Sequel.desc(:created_at, nulls: :last)).first
+          task = self.where(parent_uuid: parent.uuid).exclude(state: 'stop').order_by(Sequel.desc(:created_at, nulls: :last)).first
           if task.nil?
-            task = self.create(foreign_uuid: parent.uuid) do |t|
+            task = self.create(parent_uuid: parent.uuid) do |t|
               t.state = "new"
               t.attrs = opts
             end
@@ -173,7 +173,7 @@ module Toygun
             task && task.running?
           end
         end
-        t.many_to_one parent_name, class: parent, key: :foreign_uuid, primary_key: :uuid
+        t.many_to_one parent_name, class: parent, key: :parent_uuid, primary_key: :uuid
       end
     end
 
@@ -186,7 +186,7 @@ module Toygun
     end
 
     def self.included(base)
-      base.one_to_many :tasks, class: 'Toygun::Task', key: :foreign_uuid, primary_key: :uuid
+      base.one_to_many :tasks, class: 'Toygun::Task', key: :parent_uuid, primary_key: :uuid
       base.extend ClassMethods
       base.include InstanceMethods
     end
