@@ -16,10 +16,11 @@
 
 - [ ] json attrs
 	- [ ] `field :name` generates getter/setter, no diff between nil value and del key
-		notes, pouch just uses #modified!
-	- [ ] `field :name, Class` optional typecheck / proc
+		notes, and just uses #modified!
+	- [ ] `field :name, Class` optional typecheck
 	- [ ] field uses custom encoder to handle Resources, Tasks stored in attrs
 	- [ ] s/attrs/json_attrs/
+	- [ ] `field ... do encode ... decode ... end`
 	- [ ] fields are checked in start/transition
 	- [ ] field schemas are versioned (backfil/write-up)
 	- [ ] attrs work with STI
@@ -27,31 +28,45 @@
 
 - [ ] encoding
 	- [ ] custom encoder/decoders
+		```
+			c.register Resource do
+			  encode do ... end
+			end
+		```
+			
+	- [ ] encrypted decorated json object {'Vault':[key_id, secret]}
 	- [ ] redis queue uses custom encoder (sends over versioned message)
 	- [ ] attrs uses custom encoder (versioned attrs)
 	- [ ] api uses custom encoder (urls)
 
 - [ ] encryption
-	- [ ] fernet
+	- [x] fernet
 	- [ ] keyring/Config
-	- [ ] decorated json object {'Vault':[key_id, secret]
 
 - [ ] scheduler
 	- [x] redis 
 	- [x] test harness
 	- [x] redis queue
 	- [x] redis lock
-	- [ ] worker / clock
+	- [ ] worker / clock (send uuids in queue)
 	- [ ] scheduler / try_exclusively
 	- [ ] encoded queues / encrypted queues using attrs like thing to make json string
 	- [ ] worker partitoning / priority / worker leases
 	- [ ] logs/notices
+
+- [ ] sequel plugins
+	- [ ] subtasks becomes a sequel plugin
+	- [ ] attr becomes a sequel plugin
+	- [ ] resource, task use plugins
+	- [ ] leave open door for custom resource/task combos.
 
 - [ ] tasks 
 	- [ ] should_start? should_stop?
 	- [ ] task triggers & subclasses lookup/fixes for task triggers
 	- [ ] timeouts / panics
 	- [ ] specs for duplicates, leaks in past
+	- [ ] missing transition etc
+	- [ ] glue to resources? i.e :resource not :parent
 
 - [ ] states
 	- [ ] customizable archival / expiry
@@ -59,6 +74,7 @@
 	- [ ] use upserts and avoid advisory locking
 	- [ ] start_every (using bucket) / scheduler
 	- [ ] circuit breaking
+	- [ ] renames
 
 - [ ] resources
 	- [x] spec resource
@@ -84,3 +100,7 @@
 - [ ] (aws?) example code
 
 - [ ] docs
+	- [ ] directory readmes, project root readme
+	- [ ] task.md / state.md esque things
+
+- [ ] bin/setup bin/teardown
