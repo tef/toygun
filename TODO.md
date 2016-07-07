@@ -14,41 +14,62 @@
 - [x] codec / specs for decorated json
 - [x] internal attrs have internal names
 
-- [ ] attrs
-	- [ ] `field :name, Class` in 
+- [ ] task/resource attrs
+	- [ ] `field :name` generates getter/setter, no diff between nil value and del key
+	- [ ] `field :name, Class` optional typecheck / proc
+	- [ ] field uses custom encoder to handle Resources, Tasks stored in attrs
 	- [ ] s/attrs/json_attrs/
-	- [ ] attr schemas are versioned (backfil/write-up)
+	- [ ] field schemas are versioned (backfil/write-up)
 	- [ ] attrs work with STI
 	- [ ] encrypted attrs
 
+- [ ] encoding
+	- [ ] custom encoder/decoders
+	- [ ] redis queue uses custom encoder (sends over versioned message)
+	- [ ] attrs uses custom encoder (versioned attrs)
+	- [ ] api uses custom encoder (urls)
 
 - [ ] resources
 	- [x] spec resource
 	- [x] bake in resource lifecycle
 	- [x] redis 
 	- [x] test harness
-	- [ ] redis lock
-	- [ ] worker / clock (copy yobukos)
-	- [ ] encrypted queues
+	- [x] redis queue
+	- [x] redis lock
+	- [ ] scheduler / try_exclusively
+	- [ ] tick queue / worker / clock / clockwork (copy yobukos)
+	- [ ] encoded queues / encrypted queues using attrs like thing to make json string
+	- [ ] worker partitoning / priority / worker leases
+	- [ ] parenting 
+	- [ ] datasets
+	- [ ] logs/notices
 
 - [ ] tasks 
 	- [ ] should_start? should_stop?
 	- [ ] task triggers & subclasses lookup/fixes for task triggers
-	- [ ] timeouts /panics
+	- [ ] timeouts / panics
 
 - [ ] states
 	- [ ] customizable archival / expiry
 	- [ ] task.start race from new to first state
-	- [ ] use upserts
+	- [ ] use upserts and avoid advisory locking
+	- [ ] bucket starting
+	- [ ] circuit breaking
+
 
 - [ ] api server / client
 	- [ ] server using decorated json
 	- [ ] reflection for methods, state, associations
  	- [ ] client using decorated json
 	- [ ] html interface
+	- [ ] breakdown pages
 	- [ ] bouncer
 	- [ ] cli client
 	- [ ] caching
 
-- [ ] aws example code
 - [ ] logging
+	- [ ] log table
+	- [ ] queue/tick metrics (max ticks, worker throughput)
+	- [ ] error handling
+
+- [ ] aws example code
