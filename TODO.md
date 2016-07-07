@@ -14,11 +14,13 @@
 - [x] codec / specs for decorated json
 - [x] internal attrs have internal names
 
-- [ ] task/resource attrs
+- [ ] json attrs
 	- [ ] `field :name` generates getter/setter, no diff between nil value and del key
+		notes, pouch just uses #modified!
 	- [ ] `field :name, Class` optional typecheck / proc
 	- [ ] field uses custom encoder to handle Resources, Tasks stored in attrs
 	- [ ] s/attrs/json_attrs/
+	- [ ] fields are checked in start/transition
 	- [ ] field schemas are versioned (backfil/write-up)
 	- [ ] attrs work with STI
 	- [ ] encrypted attrs
@@ -29,33 +31,40 @@
 	- [ ] attrs uses custom encoder (versioned attrs)
 	- [ ] api uses custom encoder (urls)
 
-- [ ] resources
-	- [x] spec resource
-	- [x] bake in resource lifecycle
+- [ ] encryption
+	- [ ] fernet
+	- [ ] keyring/Config
+	- [ ] decorated json object {'Vault':[key_id, secret]
+
+- [ ] scheduler
 	- [x] redis 
 	- [x] test harness
 	- [x] redis queue
 	- [x] redis lock
+	- [ ] worker / clock
 	- [ ] scheduler / try_exclusively
-	- [ ] tick queue / worker / clock / clockwork (copy yobukos)
 	- [ ] encoded queues / encrypted queues using attrs like thing to make json string
 	- [ ] worker partitoning / priority / worker leases
-	- [ ] parenting 
-	- [ ] datasets
 	- [ ] logs/notices
 
 - [ ] tasks 
 	- [ ] should_start? should_stop?
 	- [ ] task triggers & subclasses lookup/fixes for task triggers
 	- [ ] timeouts / panics
+	- [ ] specs for duplicates, leaks in past
 
 - [ ] states
 	- [ ] customizable archival / expiry
 	- [ ] task.start race from new to first state
 	- [ ] use upserts and avoid advisory locking
-	- [ ] bucket starting
+	- [ ] start_every (using bucket) / scheduler
 	- [ ] circuit breaking
 
+- [ ] resources
+	- [x] spec resource
+	- [x] bake in resource lifecycle
+	- [ ] parenting 
+	- [ ] datasets
 
 - [ ] api server / client
 	- [ ] server using decorated json
@@ -72,4 +81,6 @@
 	- [ ] queue/tick metrics (max ticks, worker throughput)
 	- [ ] error handling
 
-- [ ] aws example code
+- [ ] (aws?) example code
+
+- [ ] docs

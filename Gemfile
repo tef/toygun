@@ -21,6 +21,7 @@ gem "sucker_punch"
 gem 'hiredis', '~> 0.6.1'
 gem 'redis', '~> 3.3.0', require: ['redis/connection/hiredis', 'redis']
 gem 'redis-namespace'
+gem 'fernet'
 
 group :development, :test do
   gem "pry-byebug"

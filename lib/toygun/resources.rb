@@ -44,8 +44,9 @@ module Toygun
     end
 
     def tick
-      # err handling
-      super
+      return if state == State::STOP
+      start if state == State::NEW
+
       tasks_dataset.active.each do |t|
         t.tick
       end
