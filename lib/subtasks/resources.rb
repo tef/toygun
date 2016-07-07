@@ -35,6 +35,19 @@ module Toygun
       Task.define_task_on(self, name, &block)
     end
 
+    def self.task_states
+      {
+        "starting" => Proc.new {},
+        "running" => Proc.new {},
+        "stopping" => Proc.new {},
+        "restarting" => Proc.new {},
+      }
+    end
+
+    def self.state
+      raise "no"
+    end
+
     def tick
       # err handling
       super

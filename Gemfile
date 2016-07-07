@@ -18,6 +18,9 @@ gem "sinatra", "~> 1.4", require: "sinatra/base"
 gem "sinatra-contrib", require: ["sinatra/namespace", "sinatra/reloader"]
 gem "sinatra-router"
 gem "sucker_punch"
+gem 'hiredis', '~> 0.6.1'
+gem 'redis', '~> 3.3.0', require: ['redis/connection/hiredis', 'redis']
+gem 'redis-namespace'
 
 group :development, :test do
   gem "pry-byebug"

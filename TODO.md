@@ -23,9 +23,10 @@
 
 
 - [ ] resources
-	- [ ] spec resource
-	- [ ] bake in resource lifecycle
-	- [ ] redis & test harness
+	- [x] spec resource
+	- [x] bake in resource lifecycle
+	- [x] redis 
+	- [x] test harness
 	- [ ] redis lock
 	- [ ] worker / clock (copy yobukos)
 	- [ ] encrypted queues

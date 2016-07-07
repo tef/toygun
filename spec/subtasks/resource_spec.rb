@@ -25,9 +25,6 @@ describe Toygun::Resource do
     module Toygun
       class DummyResource < Resource
 
-        state "yes" do
-        end
-
         def_task "test" do
           state "beginning" do
             transition "middle"
