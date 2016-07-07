@@ -2,6 +2,7 @@ module Toygun
   module State
     NEW = '__new__'.freeze
     STOP = '__stop__'.freeze
+    PANIC = '__panic__'.freeze
 
     class Panic < StandardError; end
     class Missing < StandardError; end

@@ -94,7 +94,7 @@ describe Toygun::Task do
       dummy.another_task.stop
       dummy.run_active_tasks
       expect(dummy.test_task.state).to eq("middle")
-      expect(dummy.another_task.state).to eq("stop")
+      expect(dummy.another_task.state).to eq("__stop__")
     end
   end
 
@@ -103,7 +103,7 @@ describe Toygun::Task do
     it 'should be created stopped' do
       dummy.tasks_dataset.delete
       dummy.test_task
-      expect(dummy.test_task.state).to eq("stop")
+      expect(dummy.test_task.state).to eq("__stop__")
     end
 
     it 'should be running when started' do
@@ -154,7 +154,7 @@ describe Toygun::Task do
       dummy.test_task.tick
       expect(dummy.test_task.state).to eq("end")
       dummy.test_task.tick
-      expect(dummy.test_task.state).to eq("stop")
+      expect(dummy.test_task.state).to eq("__stop__")
     end
 
     it 'should rewind' do
@@ -190,7 +190,7 @@ describe Toygun::Task do
     task.state = "other"
     # sneak in a state transition without the model noticing
     expect(task.state).to eq("other")
-    expect { task.transition "stop" }.to raise_error(Toygun::State::Desynchronized)
+    expect { task.transition "__stop__" }.to raise_error(Toygun::State::Desynchronized)
   end
 
 end

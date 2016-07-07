@@ -20,7 +20,7 @@ Sequel.migration do
 
       index [:parent_uuid, :name, :state]
 
-      index [:parent_uuid, :name], where: "state <> 'stop'", unique:true
+      index [:parent_uuid, :name], where: "state <> '__stop__'", unique:true
       index [:parent_uuid, :name], name: "parent_uuid_name_all_index"
     end
 

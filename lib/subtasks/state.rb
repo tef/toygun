@@ -2,12 +2,12 @@ module Toygun
   module State
     module InstanceMethods
       def running?
-        state != "stop"
+        state != STOP
       end
 
       def tick
-        return if state == "stop"
-        raise Panic if state == "panic"
+        return if state == STOP
+        raise Panic if state == PANIC
 
         if block = self.class.task_states[state]
           instance_eval &block
@@ -17,23 +17,23 @@ module Toygun
       end
 
       def start(**opts)
-        if state == "new"
+        if state == NEW
           transition self.class.task_states.first[0], opts
         end
       end
 
       def stop
-        if state != "stop"
-          transition "stop"
+        if state != STOP
+          transition STOP
         end
       end
 
       def panic(message: "Task panicked")
-        transition "panic", {panic_message: message}
+        transition PANIC, {panic_message: message}
       end
 
       def panic?
-        state == "panic"
+        state == PANIC
       end
 
       def rewind(index)
@@ -46,7 +46,7 @@ module Toygun
 
       def transition(new_state, **opts)
         current_state = state
-        raise Missing, new_state if !["panic", "stop"].include?(new_state) && !self.class.task_states[new_state]
+        raise Missing, new_state if ![PANIC, STOP].include?(new_state) && !self.class.task_states[new_state]
         Toygun::Task.db.transaction do
           latest_state = task_transitions.first
           if latest_state.nil? || latest_state.to == current_state
@@ -72,48 +72,6 @@ module Toygun
       def task_states
         @task_states ||= {}
       end
-
-      def define_task_on(inside, class_name, &block)
-        inside.class_eval "class #{class_name} < #{self}; end"
-        t = inside.const_get(class_name)
-        t.class_eval &block
-        t
-      end
-
-      def find_recent_for(parent)
-        self.where(parent_uuid: parent.uuid).order_by(Sequel.desc(:created_at, nulls: :last)).first
-      end
-
-      def find_or_create_for(parent)
-        self.db.transaction do
-          if Locks.pg_try_advisory_xact_lock(self, parent.uuid)
-            task = self.where(parent_uuid: parent.uuid).order_by(Sequel.desc(:created_at, nulls: :last)).first
-            if task.nil?
-              task = self.create(parent_uuid: parent.uuid) do |t|
-                t.state = "stop"
-                t.attrs = {}
-              end
-            end
-            task
-          end
-        end
-      end
-
-      def start_for(parent, **opts)
-        db.transaction do
-          if Locks.pg_try_advisory_xact_lock(self, parent.uuid)
-            task = self.where(parent_uuid: parent.uuid).exclude(state: 'stop').order_by(Sequel.desc(:created_at, nulls: :last)).first
-            if task.nil?
-              task = self.create(parent_uuid: parent.uuid) do |t|
-                t.state = "new"
-                t.attrs = opts
-              end
-              task.start
-            end
-            task
-          end
-        end
-      end
     end
   end
 
@@ -128,7 +86,6 @@ module Toygun
       Time.now - created_at
     end
   end
-  
 
   class Task < Sequel::Model
     plugin :single_table_inheritance, :name
@@ -140,8 +97,49 @@ module Toygun
     extend State::ClassMethods
 
     def_dataset_method :active do
-        exclude(state: "stop")
+        exclude(state: State::STOP)
+    end
+
+    def self.find_recent_for(parent)
+      self.where(parent_uuid: parent.uuid).order_by(Sequel.desc(:created_at, nulls: :last)).first
+    end
+
+    def self.find_or_create_for(parent)
+      self.db.transaction do
+        if Locks.pg_try_advisory_xact_lock(self, parent.uuid)
+          task = self.where(parent_uuid: parent.uuid).order_by(Sequel.desc(:created_at, nulls: :last)).first
+          if task.nil?
+            task = self.create(parent_uuid: parent.uuid) do |t|
+              t.state = State::STOP
+              t.attrs = {}
+            end
+          end
+          task
+        end
+      end
+    end
+
+    def self.start_for(parent, **opts)
+      db.transaction do
+        if Locks.pg_try_advisory_xact_lock(self, parent.uuid)
+          task = self.where(parent_uuid: parent.uuid).exclude(state: State::STOP).order_by(Sequel.desc(:created_at, nulls: :last)).first
+          if task.nil?
+            task = self.create(parent_uuid: parent.uuid) do |t|
+              t.state = State::NEW
+              t.attrs = opts
+            end
+            task.start
+          end
+          task
+        end
+      end
+    end
+
+    def self.define_task_on(inside, class_name, &block)
+      inside.class_eval "class #{class_name} < #{self}; end"
+      t = inside.const_get(class_name)
+      t.class_eval &block
+      t
     end
   end
 end
-
