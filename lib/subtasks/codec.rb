@@ -20,16 +20,35 @@ module Toygun
       @classes ||= {}
     end
 
-    def dump(o)
+    # Dump a decorated object
+
+    def dump_obj(o)
+      raise "heck" if !self.classes.include? o
       o = dump_one(o)
       raise "heck" if !(Hash === o)
       o.to_json
     end
 
+    def parse_obj(string)
+      json = JSON.parse(string)
+      raise "heck" if !(Hash === o)
+      o = parse_one(json)
+      raise "heck" if !self.classes.include? o
+      o
+    end
+
+    # Dump a hash but only decorate the values
+
     def dump_hash(o)
       h = o.inject({}) {|h, (k,v)| h[k] = dump_one(v); h}
       h.to_json
     end
+
+    def parse_hash(string)
+      json = JSON.parse(string)
+      json.inject({}) {|h, (k,v)| h[k] = parse_one(v); h}
+    end
+
 
     def dump_one(o)
       if classes.include? o
@@ -61,16 +80,6 @@ module Toygun
       else
         raise EncodeError, "unsupported #{o}"
       end
-    end
-
-    def parse(string)
-      json = JSON.parse(string)
-      parse_one(json)
-    end
-
-    def parse_hash(string)
-      json = JSON.parse(string)
-      json.inject({}) {|h, (k,v)| h[k] = parse_one(v); h}
     end
 
     def parse_one(o)

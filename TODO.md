@@ -10,31 +10,43 @@
 - [x] split out files, duplicate logic (state.rb, resource.rb, task.rb)
 - [x] def_task
 - [x] datasets
+- [x] resource
+- [x] codec / specs for decorated json
+- [x] internal attrs have internal names
 
-- [ ] statable
-	- [ ] add resource
+- [ ] attrs
+	- [ ] `field :name, Class` in 
+	- [ ] s/attrs/json_attrs/
+	- [ ] attr schemas are versioned (backfil/write-up)
+	- [ ] attrs work with STI
+	- [ ] encrypted attrs
+
+
+- [ ] resources
 	- [ ] spec resource
-	- [ ] resource lifecycle
-	- [ ] worker / clock / lock
-bugs
-- [ ] task.start race from new to first state
-- [ ] subclasses lookup/fixes
-- [ ] internal attrs have internal names
-- [ ] use upserts
+	- [ ] bake in resource lifecycle
+	- [ ] redis & test harness
+	- [ ] redis lock
+	- [ ] worker / clock (copy yobukos)
+	- [ ] encrypted queues
 
-statable
+- [ ] tasks 
+	- [ ] should_start? should_stop?
+	- [ ] task triggers & subclasses lookup/fixes for task triggers
+	- [ ] timeouts /panics
 
-- [ ] redis & test harness
-- [ ] try exclusively
-- [ ] worker / clock
+- [ ] states
+	- [ ] customizable archival / expiry
+	- [ ] task.start race from new to first state
+	- [ ] use upserts
 
-automata
-- [ ] timeouts /panics
-- [ ] jsonb/attr parser/schema
-- [ ] fernet encrypt/decrypt
-- [ ] panic_state/stop_state
+- [ ] api server / client
+	- [ ] server using decorated json
+	- [ ] reflection for methods, state, associations
+ 	- [ ] client using decorated json
+	- [ ] html interface
+	- [ ] bouncer
+	- [ ] cli client
+	- [ ] caching
 
-- browser
-- [ ] fields / attrs / encoding
-- [ ] decorated json api
-- [ ] html interface
+- [ ] aws example code
