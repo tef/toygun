@@ -14,6 +14,25 @@
 - [x] codec / specs for decorated json
 - [x] internal attrs have internal names
 
+- [ ] scheduler
+	- [x] redis 
+	- [x] test harness
+	- [x] redis queue
+	- [x] redis lock
+	- [ ] worker / clock (send uuids in queue)
+	- [ ] scheduler / try_exclusively
+	- [ ] encoded queues / encrypted queues using attrs like thing to make json string
+	- [ ] worker partitoning / priority / worker leases
+	- [ ] logs/notices
+
+- [ ] layering
+	- [ ] add in all members of schema into Models
+	- [ ] state becomes a sequel plugin (passing in transition table)
+	- [ ] attr becomes a sequel plugin
+	- [ ] resource, task use plugins, move into models (& out of toygun)
+	- [ ] layers: modules (state), plugins (attr), models (resources/tasks)
+	- [ ] leave open door for custom resource/task combos.
+
 - [ ] json attrs
 	- [ ] `field :name` generates getter/setter, no diff between nil value and del key
 		notes, and just uses #modified!
@@ -25,6 +44,10 @@
 	- [ ] field schemas are versioned (backfil/write-up)
 	- [ ] attrs work with STI
 	- [ ] encrypted attrs
+
+- [ ] encryption
+	- [x] fernet
+	- [ ] keyring/Config
 
 - [ ] encoding
 	- [ ] custom encoder/decoders
@@ -39,35 +62,6 @@
 	- [ ] attrs uses custom encoder (versioned attrs)
 	- [ ] api uses custom encoder (urls)
 
-- [ ] encryption
-	- [x] fernet
-	- [ ] keyring/Config
-
-- [ ] scheduler
-	- [x] redis 
-	- [x] test harness
-	- [x] redis queue
-	- [x] redis lock
-	- [ ] worker / clock (send uuids in queue)
-	- [ ] scheduler / try_exclusively
-	- [ ] encoded queues / encrypted queues using attrs like thing to make json string
-	- [ ] worker partitoning / priority / worker leases
-	- [ ] logs/notices
-
-- [ ] sequel plugins
-	- [ ] subtasks becomes a sequel plugin
-	- [ ] attr becomes a sequel plugin
-	- [ ] resource, task use plugins
-	- [ ] leave open door for custom resource/task combos.
-
-- [ ] tasks 
-	- [ ] should_start? should_stop?
-	- [ ] task triggers & subclasses lookup/fixes for task triggers
-	- [ ] timeouts / panics
-	- [ ] specs for duplicates, leaks in past
-	- [ ] missing transition etc
-	- [ ] glue to resources? i.e :resource not :parent
-
 - [ ] states
 	- [ ] customizable archival / expiry
 	- [ ] task.start race from new to first state
@@ -76,14 +70,25 @@
 	- [ ] circuit breaking
 	- [ ] renames
 
+- [ ] tasks 
+	- [ ] should_start? should_stop?
+	- [ ] task triggers & subclasses lookup/fixes for task triggers
+	- [ ] timeouts / panics
+	- [ ] specs for duplicates, leaks in past
+	- [ ] missing transition etc
+	- [ ] glue to resources? i.e :resource not :parent (cf models layer)
+
 - [ ] resources
 	- [x] spec resource
 	- [x] bake in resource lifecycle
 	- [ ] parenting 
 	- [ ] datasets
+	- [ ] panic state: panic when tasks are panic
+	- [ ] on_panic :escalate in tasks? maybe panic as exception
+	      model, i.e task panics goes up ownership chain until handled
 
 - [ ] api server / client
-	- [ ] server using decorated json
+	- [ ] server using decorated json / remote datasets / remote objects
 	- [ ] reflection for methods, state, associations
  	- [ ] client using decorated json
 	- [ ] html interface
@@ -92,10 +97,11 @@
 	- [ ] cli client
 	- [ ] caching
 
-- [ ] logging
+- [ ] logging / metrics / errors
 	- [ ] log table
 	- [ ] queue/tick metrics (max ticks, worker throughput)
-	- [ ] error handling
+	- [ ] error handling / rollbar
+	- [ ] notifications
 
 - [ ] (aws?) example code
 
@@ -104,3 +110,5 @@
 	- [ ] task.md / state.md esque things
 
 - [ ] bin/setup bin/teardown
+- [ ] gem / app 
+	- [ ] split into toygun and app
