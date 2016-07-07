@@ -6,7 +6,7 @@ module Toygun
     plugin :timestamps, update_on_create: true
 
     def_dataset_method :latest do
-      order(:created_at.desc).first
+      order(:step.desc).first
     end
 
     def duration
@@ -30,7 +30,7 @@ module Toygun
     plugin :single_table_inheritance, :name
     plugin :timestamps, update_on_create: true
 
-    one_to_many :task_transitions, key: :task_uuid, primary_key: :uuid, order: Sequel.desc(:created_at)
+    one_to_many :task_transitions, key: :task_uuid, primary_key: :uuid, order: Sequel.desc(:step)
 
     def_dataset_method :active do
       exclude(state: "stop")
@@ -85,7 +85,8 @@ module Toygun
       Toygun::Task.db.transaction do
         latest_state = task_transitions.first
         if latest_state.nil? || latest_state.to == current_state
-          add_task_transition(from: current_state, to: new_state)
+          new_step = latest_state.nil? ? 0 : latest_state.step+1
+          add_task_transition(from: current_state, to: new_state, step: new_step)
           self.attrs.update(opts)
           self.state = new_state
           self.save

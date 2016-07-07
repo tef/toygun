@@ -29,6 +29,8 @@ Sequel.migration do
 
       foreign_key :task_uuid, :tasks, null: false, type: "uuid"
 
+      smallint :step
+
       String :from
       String :to
 
@@ -36,6 +38,7 @@ Sequel.migration do
 
       index :task_uuid
       index :created_at
+      index [:task_uuid, :step], unique: true
     end
   end
 
