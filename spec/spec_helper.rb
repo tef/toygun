@@ -43,10 +43,12 @@ RSpec.configure do |config|
 
   config.before :each do
     DatabaseCleaner.start
+    REDIS.flushdb
   end
 
   config.after :each do
     DatabaseCleaner.clean
+    REDIS.flushdb
   end
 
   config.expect_with :rspec do |expectations|
