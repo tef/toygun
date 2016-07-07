@@ -50,3 +50,4 @@
 	- [ ] caching
 
 - [ ] aws example code
+- [ ] logging

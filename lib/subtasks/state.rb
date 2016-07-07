@@ -27,6 +27,7 @@ module Toygun
       def tick
         return if state == STOP
         raise Panic if state == PANIC
+        start if state == NEW
 
         if block = self.class.task_states[state]
           instance_eval &block

@@ -5,7 +5,7 @@ describe Toygun::TaskTransition do
   let(:time) { Time.now - 1000 }
 
   describe "a state" do
-    let(:state) { Toygun::TaskTransition.create(task_uuid: task.uuid, from: "a", to:"b") }
+    let(:state) { Toygun::TaskTransition.create(task_uuid: task.uuid, from: "a", to:"b", step:0) }
 
     it "has a fresh created_at by default" do
       expect(state.created_at).to be > Time.now - 1
@@ -14,7 +14,7 @@ describe Toygun::TaskTransition do
     it "can specify created_at" do
       t = Time.now.round(6) - 10000
       ns = Toygun::TaskTransition.create(task_uuid: task.uuid, from: "a", to:"b", 
-        created_at: t)
+        created_at: t, step: 0)
       expect(ns.created_at).to eq(t)
     end
   end

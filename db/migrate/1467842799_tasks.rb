@@ -2,15 +2,15 @@ Sequel.migration do
   up do
     create_table :tasks do 
       uuid :uuid, default: Sequel.function(:uuid_generate_v4), primary_key: true
-      uuid :parent_uuid
+      uuid :parent_uuid, null:false
 
       String :name, null: false
       String :state, null: false #, default: "__new__"
 
-      jsonb :attrs
+      jsonb :attrs, default: Sequel.lit("'{}'::jsonb"), null:false
 
-      timestamptz :created_at
-      timestamptz :updated_at
+      timestamptz :created_at, null:false
+      timestamptz :updated_at, null:false
 
       index :parent_uuid
 
@@ -29,15 +29,15 @@ Sequel.migration do
 
       foreign_key :task_uuid, :tasks, null: false, type: "uuid"
 
-      smallint :step
+      smallint :step, null:false
 
-      String :from
-      String :to
+      String :from, null:false
+      String :to, null: false
 
-      timestamptz :created_at
+      timestamptz :created_at, null:false
 
-      index :task_uuid
-      index :created_at
+      index :task_uuid, null:false
+      index :created_at, null:false
       index [:task_uuid, :step], unique: true
     end
 
@@ -47,10 +47,10 @@ Sequel.migration do
       String :name, null: false
       String :state, null: false,  default: "__new__"
 
-      jsonb :attrs
+      jsonb :attrs, default: Sequel.lit("'{}'::jsonb"), null:false
 
-      timestamptz :created_at
-      timestamptz :updated_at
+      timestamptz :created_at, null: false
+      timestamptz :updated_at, null: false
 
       index [:created_at]
       index [:updated_at]
@@ -62,14 +62,14 @@ Sequel.migration do
     create_table :resource_transitions do
       uuid :uuid, default: Sequel.function(:uuid_generate_v4), primary_key: true
 
-      foreign_key :resource_uuid, :tasks, null: false, type: "uuid"
+      foreign_key :resource_uuid, :resources, null: false, type: "uuid"
 
-      smallint :step
+      smallint :step, null: false
 
-      String :from
-      String :to
+      String :from, null:false
+      String :to, null:false
 
-      timestamptz :created_at
+      timestamptz :created_at, null: false
 
       index :resource_uuid
       index :created_at

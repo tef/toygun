@@ -5,7 +5,7 @@ describe Toygun::ResourceTransition do
   let(:time) { Time.now - 1000 }
 
   describe "a state" do
-    let(:state) { Toygun::ResourceTransition.create(resource_uuid: task.uuid, from: "a", to:"b") }
+    let(:state) { Toygun::ResourceTransition.create(resource_uuid: task.uuid, from: "a", to:"b", step:0) }
 
     it "has a fresh created_at by default" do
       expect(state.created_at).to be > Time.now - 1
@@ -14,7 +14,7 @@ describe Toygun::ResourceTransition do
     it "can specify created_at" do
       t = Time.now.round(6) - 10000
       ns = Toygun::ResourceTransition.create(resource_uuid: task.uuid, from: "a", to:"b", 
-        created_at: t)
+        created_at: t, step:0)
       expect(ns.created_at).to eq(t)
     end
   end
@@ -66,7 +66,7 @@ describe Toygun::Resource do
     end
 
     it 'should have a test_task method' do
-      expect(dummy.test_task).to be_a Toygun::DummyObject::Test
+      expect(dummy.test_task).to be_a Toygun::DummyResource::Test
     end
 
     it 'can run active tasks' do
@@ -156,8 +156,8 @@ describe Toygun::Resource do
 
 
   it "should have a parent" do
-    expect(dummy.test_task.dummy_object.uuid).to eq(dummy.uuid)
-    expect(dummy.test_task.dummy_object).to eq(dummy)
+    expect(dummy.test_task.dummy_resource.uuid).to eq(dummy.uuid)
+    expect(dummy.test_task.dummy_resource).to eq(dummy)
   end
 
 
