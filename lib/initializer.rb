@@ -12,11 +12,10 @@ module Initializer
   def self.require_lib
     require! %w(
       lib/toygun
+      lib/subtasks
       lib/endpoints/base
       lib/endpoints/**/*
       lib/routes
-      lib/subtasks
-      lib/subtasks/**/*
     )
   end
 

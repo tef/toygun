@@ -1,3 +1,7 @@
+require_relative "subtasks/state"
+require_relative "subtasks/tasks"
+require_relative "subtasks/resources"
+
 module Toygun
   module Locks
     def self.pg_try_advisory_xact_lock(klass, key)

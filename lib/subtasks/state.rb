@@ -57,8 +57,8 @@ module Toygun
 
       def rewind(index)
         return if index < 1
-        latest = task_transitions.first.created_at
-        if last_known = task_transitions_dataset.where('created_at < ?', latest).order(Sequel.desc(:created_at)).limit(index).last
+        latest = transitions.first.created_at
+        if last_known = transitions_dataset.where('created_at < ?', latest).order(Sequel.desc(:created_at)).limit(index).last
           transition last_known.to
         end
       end
@@ -67,10 +67,10 @@ module Toygun
         current_state = state
         raise Missing, new_state if ![PANIC, STOP].include?(new_state) && !self.class.task_states[new_state]
         Toygun::Task.db.transaction do
-          latest_state = task_transitions.first
+          latest_state = transitions.first
           if latest_state.nil? || latest_state.to == current_state
             new_step = latest_state.nil? ? 0 : latest_state.step+1
-            add_task_transition(from: current_state, to: new_state, step: new_step)
+            add_transition(from: current_state, to: new_state, step: new_step)
             self.attrs.update(opts)
             self.state = new_state
             self.save

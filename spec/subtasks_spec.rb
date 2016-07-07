@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Toygun::TaskTransition do
-  let(:task) { Toygun::Task.find_or_create(parent_uuid: 'ffffffff-ffff-ffff-ffff-ffffffffffff', name: "stuff") }
+  let(:task) { Toygun::Task.find_or_create(parent_uuid: 'ffffffff-ffff-ffff-ffff-ffffffffffff', name: "stuff", state: "__stop__") }
   let(:time) { Time.now - 1000 }
 
   describe "a state" do
