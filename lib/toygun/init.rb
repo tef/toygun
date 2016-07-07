@@ -1,0 +1,2 @@
+module Toygun
+end
