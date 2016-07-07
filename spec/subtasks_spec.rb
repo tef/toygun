@@ -132,18 +132,18 @@ describe Toygun::Task do
 
     it 'does not run when panicing' do
       dummy.test_task.panic
-      expect { dummy.test_task.tick }.to raise_error(Toygun::TaskPanic)
+      expect { dummy.test_task.tick }.to raise_error(Toygun::State::Panic)
     end
 
     it 'complains about invalid states' do
       t = dummy.test_task
-      expect { t.transition "missing" }.to raise_error(Toygun::MissingTaskState)
+      expect { t.transition "missing" }.to raise_error(Toygun::State::Missing)
     end
 
     it 'complains about invalid states' do
       t = dummy.test_task
       t.state = "missing"
-      expect { t.tick }.to raise_error(Toygun::MissingTaskState)
+      expect { t.tick }.to raise_error(Toygun::State::Missing)
     end
 
     it 'should tick' do
@@ -190,7 +190,7 @@ describe Toygun::Task do
     task.state = "other"
     # sneak in a state transition without the model noticing
     expect(task.state).to eq("other")
-    expect { task.transition "stop" }.to raise_error(Toygun::DesynchronizedTaskStateException)
+    expect { task.transition "stop" }.to raise_error(Toygun::State::Desynchronized)
   end
 
 end

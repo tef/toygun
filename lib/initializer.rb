@@ -1,9 +1,8 @@
 module Initializer
   def self.run
     require_config
-    require_lib
     require_initializers
-    require_models
+    require_lib
   end
 
   def self.require_config
@@ -16,13 +15,8 @@ module Initializer
       lib/endpoints/base
       lib/endpoints/**/*
       lib/routes
-    )
-  end
-
-  def self.require_models
-    require! %w(
-      lib/models/**/*
       lib/subtasks
+      lib/subtasks/**/*
     )
   end
 
