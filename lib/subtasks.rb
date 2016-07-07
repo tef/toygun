@@ -1,25 +1,4 @@
 module Toygun
-  module State
-    NEW = '__new__'.freeze
-    STOP = '__stop__'.freeze
-    PANIC = '__panic__'.freeze
-
-    class Panic < StandardError; end
-    class Missing < StandardError; end
-
-    class Desynchronized < StandardError
-       def initialize(opts)
-         @uuid = opts.delete(:uuid)
-         @expected = opts.delete(:expected)
-         @actual = opts.delete(:actual)
-       end
-
-       def message
-         "Expected stateful object #{@uuid} to be in #{@expected}; it has already transitioned to #{@actual}"
-       end
-    end
-  end
-
   module Locks
     def self.pg_try_advisory_xact_lock(klass, key)
       lock_a, lock_b = [Zlib.crc32("#{klass.table_name}"),Zlib.crc32("#{key}")].pack('LL').unpack('ll')
