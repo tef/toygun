@@ -59,10 +59,50 @@ module Toygun
       end
     end
 
-    def self.define_task_on(inside, class_name, &block)
-      inside.class_eval "class #{class_name} < #{self}; end"
-      t = inside.const_get(class_name)
+    def self.define_task_on(parent, name, &block)
+      class_name = name.to_s.split(/_/).map{ |word| word.capitalize }.join('').sub("!","")
+      parent_name = parent.to_s.split('::')[-1].split(/(?=[A-Z]+)/).map(&:downcase).join("_").to_sym
+
+      parent.class_eval "class #{class_name} < #{self}; end"
+
+      t = parent.const_get(class_name)
+
+      t.class_eval do 
+        many_to_one :parent, class: parent, key: :parent_uuid, primary_key: :uuid
+        alias_method parent_name, :parent
+      end
+
       t.class_eval &block
+
+      parent.class_eval do
+        define_method(name.to_s+"_task") do
+          t.find_or_create_for(self)
+        end
+
+        def_dataset_method("#{name}_tasks") do
+         t.where('parent_uuid in ?', self.select(:uuid))
+        end
+
+        define_method(name) do |**opts|
+          task = t.start_for(self, **opts)
+        end
+
+        def_dataset_method("#{name}") do |**opts|
+          all.each do |parent|
+            t.start_for(parent, **opts)
+          end
+        end
+
+        define_method(name.to_s+"_running?") do
+          task = t.find_recent_for(self)
+          task && task.running?
+        end
+
+        def_dataset_method("#{name}_running?") do
+          t.where('foreign_uuid in ?', self.select(:uuid)).exclude(state: State::STOP).count > 0
+        end
+      end
+
       t
     end
   end

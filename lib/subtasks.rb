@@ -8,28 +8,8 @@ module Toygun
 
   module Subtasks
     module ClassMethods
-      def task(name, &block)
-        class_name = name.to_s.split(/_/).map{ |word| word.capitalize }.join('').sub("!","")
-        parent_name = self.to_s.split('::')[-1].split(/(?=[A-Z]+)/).map(&:downcase).join("_").to_sym
-        parent = self
-
-        t = Task.define_task_on(self, class_name, &block)
-        class_eval do
-          define_method(name.to_s+"_task") do
-            t.find_or_create_for(self)
-          end
-          define_method(name) do |**opts|
-            task = t.start_for(self, **opts)
-          end
-          define_method(name.to_s+"_running?") do
-            task = t.find_recent_for(self)
-            task && task.running?
-          end
-        end
-        t.class_eval do 
-          many_to_one :parent, class: parent, key: :parent_uuid, primary_key: :uuid
-          alias_method parent_name, :parent
-        end
+      def def_task(name, &block)
+        Task.define_task_on(self, name, &block)
       end
     end
 

@@ -33,7 +33,7 @@ describe Toygun::Task do
 
         include Subtasks
 
-        task "test" do
+        def_task "test" do
           state "beginning" do
             transition "middle"
           end
@@ -47,7 +47,7 @@ describe Toygun::Task do
           end
         end
 
-        task :another do
+        def_task :another do
           state "a" do
             transition "b"
           end
