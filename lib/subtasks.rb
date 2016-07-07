@@ -1,3 +1,4 @@
+require_relative "subtasks/codec"
 require_relative "subtasks/state"
 require_relative "subtasks/tasks"
 require_relative "subtasks/resources"

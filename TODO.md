@@ -11,6 +11,11 @@
 - [x] def_task
 - [x] datasets
 
+- [ ] statable
+	- [ ] add resource
+	- [ ] spec resource
+	- [ ] resource lifecycle
+	- [ ] worker / clock / lock
 bugs
 - [ ] task.start race from new to first state
 - [ ] subclasses lookup/fixes
@@ -19,17 +24,17 @@ bugs
 
 statable
 
-- [ ] statable
-- [ ] redis
+- [ ] redis & test harness
 - [ ] try exclusively
 - [ ] worker / clock
 
 automata
-- [ ] timeouts
+- [ ] timeouts /panics
 - [ ] jsonb/attr parser/schema
 - [ ] fernet encrypt/decrypt
 - [ ] panic_state/stop_state
 
 - browser
+- [ ] fields / attrs / encoding
 - [ ] decorated json api
 - [ ] html interface
