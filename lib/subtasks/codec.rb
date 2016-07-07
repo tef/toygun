@@ -4,7 +4,7 @@ require 'stringio'
 require 'net/http'
 
 module Toygun
-  class Codec 
+  class Codec
     CONTENT_TYPE = "application/decorated-json"
 
     class DecodeError < StandardError
@@ -21,7 +21,14 @@ module Toygun
     end
 
     def dump(o)
-      dump_one(o).to_json
+      o = dump_one(o)
+      raise "heck" if !(Hash === o)
+      o.to_json
+    end
+
+    def dump_hash(o)
+      h = o.inject({}) {|h, (k,v)| h[k] = dump_one(v); h}
+      h.to_json
     end
 
     def dump_one(o)
@@ -38,7 +45,7 @@ module Toygun
       elsif TrueClass === o
         o
       elsif FalseClass === o
-        o 
+        o
       elsif o.nil?
         o
       elsif Array === o
@@ -55,10 +62,15 @@ module Toygun
         raise EncodeError, "unsupported #{o}"
       end
     end
-    
+
     def parse(string)
       json = JSON.parse(string)
       parse_one(json)
+    end
+
+    def parse_hash(string)
+      json = JSON.parse(string)
+      json.inject({}) {|h, (k,v)| h[k] = parse_one(v); h}
     end
 
     def parse_one(o)
@@ -71,7 +83,7 @@ module Toygun
       elsif TrueClass === o
         o
       elsif FalseClass === o
-        o 
+        o
       elsif o.nil?
         o
       elsif Array === o
