@@ -1,6 +1,7 @@
 module Toygun
   module ModelAttributes
     def self.apply(name)
+      # name.plugin composition
     end
 
     module ClassMethods
