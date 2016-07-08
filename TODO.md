@@ -19,8 +19,8 @@
 	- [x] test harness
 	- [x] redis queue
 	- [x] redis lock
-	- [ ] worker / clock (send uuids in queue)
-	- [ ] scheduler / try_exclusively
+	- [x] worker / clock (send uuids in queue)
+	- [ ] scheduler (registry) / try_exclusively
 	- [ ] encoded queues / encrypted queues using attrs like thing to make json string
 	- [ ] worker partitoning / priority / worker leases
 	- [ ] logs/notices
@@ -43,14 +43,12 @@
 - [ ] encryption
 	- [x] fernet
 	- [ ] keyring/Config
+	- [ ] encrypted_field
+	- [ ] EncryptedQueue
 
 - [ ] encoding
-	- [ ] custom encoder/decoders
-		```
-			c.register Resource do
-			  encode do ... end
-			end
-		```
+	- [ ] custom encoder/decoders for embedded objects
+	- [ ] custom encoders for fields in hash
 			
 	- [ ] encrypted decorated json object {'Vault':[key_id, secret]}
 	- [ ] redis queue uses custom encoder (sends over versioned message)

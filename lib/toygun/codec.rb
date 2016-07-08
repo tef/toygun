@@ -13,46 +13,31 @@ module Toygun
     end
 
     def register(klass, codec)
-      classes[klass] = codec
+      handlers[klass] = codec
     end
 
-    def classes
-      @classes ||= {}
+    def handlers
+      @handlers ||= {}
     end
 
-    # Dump a decorated object
+    class ModelHandler
+      # codec.register Resource, ModelHandler.new(Resource)
+      def initialize(klass)
+        @klass = klass
+      end
 
-    def dump_obj(o)
-      raise "heck" if !self.classes.include? o
-      o = dump_one(o)
-      raise "heck" if !(Hash === o)
-      o.to_json
+      def dump(obj, codec)
+        o[o.primary_key]
+      end
+
+      def parse(key, codec)
+        @klass[v]
+      end
     end
-
-    def parse_obj(string)
-      json = JSON.parse(string)
-      raise "heck" if !(Hash === o)
-      o = parse_one(json)
-      raise "heck" if !self.classes.include? o
-      o
-    end
-
-    # Dump a hash but only decorate the values
-
-    def dump_hash(o)
-      h = o.inject({}) {|h, (k,v)| h[k] = dump_one(v); h}
-      h.to_json
-    end
-
-    def parse_hash(string)
-      json = JSON.parse(string)
-      json.inject({}) {|h, (k,v)| h[k] = parse_one(v); h}
-    end
-
 
     def dump_one(o)
-      if classes.include? o
-        {o.name => classes[o].dump(o, self)}
+      if handlers.include? o
+        {o.name => handlers[o].dump(o, self)}
       elsif Symbol === o
         {"Symbol" => o.to_s}
       elsif String === o
@@ -110,14 +95,51 @@ module Toygun
           v.inject(Set.new) {|s, o| s.add(parse_one(o));s }
         elsif k == "Symbol"
           v.to_sym
-        elsif classes.include? k
-          classes[k].parse(v, self)
+        elsif handlers.include? k
+          handlers[k].parse(v, self)
         else
           raise DecodeError, "special unsupported #{o}"
         end
       else
         raise DecodeError, "unsupported #{o} #{o.class}"
       end
+    end
+  end
+
+  class ObjectCodec < Codec
+    def dump_obj(o)
+      raise "heck" if !self.handlers.include? o
+      o = dump_one(o)
+      raise "heck" if !(Hash === o)
+      o.to_json
+    end
+
+    def parse_obj(string)
+      json = JSON.parse(string)
+      raise "heck" if !(Hash === o)
+      o = parse_one(json)
+      raise "heck" if !self.handlers.include? o
+      o
+    end
+  end
+
+  class RecordCodec < Codec
+    def dump_hash(o)
+      h = o.inject({}) {|h, (k,v)| h.merge(dump_field(k,v))}
+      h.to_json
+    end
+
+    def dump_field(k,v)
+      {k => dump_one(v)}
+    end
+
+    def parse_hash(string)
+      json = JSON.parse(string)
+      json.inject({}) {|h, (k,v)| h.merge(parse_field(k,v))}
+    end
+
+    def parse_field(k,v)
+      {k => parse_one(v)}
     end
   end
 end

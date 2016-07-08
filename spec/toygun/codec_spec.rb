@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'date'
 
 describe Toygun::Codec do
-  let(:codec) { Toygun::Codec.new }
+  let(:codec) { Toygun::RecordCodec.new }
 
   it "encodes" do
     things = [
