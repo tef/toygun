@@ -20,7 +20,7 @@ module Toygun
     include State::InstanceMethods
     extend State::ClassMethods
 
-    extend ModelAttributes
+    plugin ModelAttributes
 
     def_dataset_method :active do
         exclude(state: State::STOP)

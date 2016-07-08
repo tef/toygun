@@ -29,13 +29,15 @@
 
 
 - [ ] json attrs
-	- [ ] `field :name` generates getter/setter, no diff between nil value and del key
+	- [x] `field :name` generates getter/setter, no diff between nil value and del key
 		notes, and just uses #modified!
-	- [ ] `field :name, Class` optional typecheck
 	- [ ] field uses custom encoder to handle Resources, Tasks stored in attrs
-	- [ ] s/attrs/json_attrs/
+		sequel :composition on json_attrs/attrs
+	- [ ] `field :name, Class` optional typecheck
 	- [ ] `field ... do encode ... decode ... end`
+	- [ ] fields are checked on save
 	- [ ] fields are checked in start/transition
+	- [ ] sti support 
 	- [ ] field schemas are versioned (backfil/write-up)
 	- [ ] attrs work with STI
 	- [ ] encrypted attrs
@@ -65,6 +67,7 @@
 
 - [ ] tasks 
 	- [ ] should_start? should_stop?
+	- [ ] rate limits ? every n.hours? buckets?
 	- [ ] task triggers & subclasses lookup/fixes for task triggers
 	- [ ] timeouts / panics
 	- [ ] specs for duplicates, leaks in past
@@ -81,12 +84,17 @@
 	      model, i.e task panics goes up ownership chain until handled
 
 - [ ] layering
-	- [ ] add in all members of schema into Models
-	- [ ] state becomes a sequel plugin (passing in transition table)
+	- [ ] create resources directory
 	- [ ] attr becomes a sequel plugin
-	- [ ] resource, task use plugins, move into models (& out of toygun)
+	- [ ] state etc is still methods  (passing in transition table)
 	- [ ] layers: modules (state), plugins (attr), models (resources/tasks)
+	- [ ] resource as a plugin?
 	- [ ] leave open door for custom resource/task combos.
+
+- [ ] cleaner plugins
+	sti plugin with renames + task stuff
+	so like Resource should be resource, Resource::Task should be resource:task_name
+	maybe foo.task.start foo.task.running? Foo.create() start sets state to new & calls create
 
 - [ ] api server / client
 	- [ ] server using decorated json / remote datasets / remote objects
@@ -113,3 +121,5 @@
 - [ ] bin/setup bin/teardown
 - [ ] gem / app 
 	- [ ] split into toygun and app
+
+- [ ] activesupport date time (ugh)
