@@ -7,7 +7,7 @@ Sequel.migration do
       String :name, null: false
       String :state, null: false #, default: "__new__"
 
-      jsonb :attrs, default: Sequel.lit("'{}'::jsonb"), null:false
+      jsonb :raw_attrs, default: Sequel.lit("'{}'::jsonb"), null:false
 
       timestamptz :created_at, null:false
       timestamptz :updated_at, null:false
@@ -47,7 +47,7 @@ Sequel.migration do
       String :name, null: false
       String :state, null: false,  default: "__new__"
 
-      jsonb :attrs, default: Sequel.lit("'{}'::jsonb"), null:false
+      jsonb :raw_attrs, default: Sequel.lit("'{}'::jsonb"), null:false
 
       timestamptz :created_at, null: false
       timestamptz :updated_at, null: false

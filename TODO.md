@@ -14,15 +14,18 @@
 - [x] codec / specs for decorated json
 - [x] internal attrs have internal names
 
+
+
 - [ ] scheduler
-	- [x] redis 
+	- [x] redis
 	- [x] test harness
 	- [x] redis queue
 	- [x] redis lock
 	- [x] worker / clock (send uuids in queue)
-	- [ ] scheduler (registry) / try_exclusively
-	- [ ] encoded queues / encrypted queues using attrs like thing to make json string
+	- [ ] encrypted queues
+	- [ ] encoded queues
 	- [ ] worker partitoning / priority / worker leases
+	- [ ] scheduler (registry) / try_exclusively
 	- [ ] logs/notices
 	- [ ] timeouts
 	- [ ] threading
@@ -31,27 +34,27 @@
 - [ ] json attrs
 	- [x] `field :name` generates getter/setter, no diff between nil value and del key
 		notes, and just uses #modified!
-	- [ ] field uses custom encoder to handle Resources, Tasks stored in attrs
+	- [x] attrs is a sequel plugin
+	- [x] hide the json field, and only allow it through accessors
 		sequel :composition on json_attrs/attrs
-	- [ ] `field :name, Class` optional typecheck
-	- [ ] `field ... do encode ... decode ... end`
+	- [ ] only allow what is a field to be dumped
+	- [ ] field uses custom encoder to handle Resources, Tasks stored in attrs
 	- [ ] fields are checked on save
 	- [ ] fields are checked in start/transition
-	- [ ] sti support 
+	- [ ] `field :name, Class` optional typecheck
+	- [ ] sti support / subclassing
 	- [ ] field schemas are versioned (backfil/write-up)
-	- [ ] attrs work with STI
-	- [ ] encrypted attrs
+	- [ ] encrypted fields
 
 - [ ] encryption
 	- [x] fernet
 	- [ ] keyring/Config
-	- [ ] encrypted_field
 	- [ ] EncryptedQueue
+	- [ ] encrypted_field
 
 - [ ] encoding
 	- [ ] custom encoder/decoders for embedded objects
 	- [ ] custom encoders for fields in hash
-			
 	- [ ] encrypted decorated json object {'Vault':[key_id, secret]}
 	- [ ] redis queue uses custom encoder (sends over versioned message)
 	- [ ] attrs uses custom encoder (versioned attrs)
@@ -64,8 +67,9 @@
 	- [ ] start_every (using bucket) / scheduler
 	- [ ] circuit breaking
 	- [ ] renames
+	- [ ] panic state
 
-- [ ] tasks 
+- [ ] tasks
 	- [ ] should_start? should_stop?
 	- [ ] rate limits ? every n.hours? buckets?
 	- [ ] task triggers & subclasses lookup/fixes for task triggers
@@ -77,24 +81,11 @@
 - [ ] resources
 	- [x] spec resource
 	- [x] bake in resource lifecycle
-	- [ ] parenting 
+	- [ ] parenting
 	- [ ] datasets
-	- [ ] panic state: panic when tasks are panic
+	- [ ] panic state
 	- [ ] on_panic :escalate in tasks? maybe panic as exception
 	      model, i.e task panics goes up ownership chain until handled
-
-- [ ] layering
-	- [ ] create resources directory
-	- [ ] attr becomes a sequel plugin
-	- [ ] state etc is still methods  (passing in transition table)
-	- [ ] layers: modules (state), plugins (attr), models (resources/tasks)
-	- [ ] resource as a plugin?
-	- [ ] leave open door for custom resource/task combos.
-
-- [ ] cleaner plugins
-	sti plugin with renames + task stuff
-	so like Resource should be resource, Resource::Task should be resource:task_name
-	maybe foo.task.start foo.task.running? Foo.create() start sets state to new & calls create
 
 - [ ] api server / client
 	- [ ] server using decorated json / remote datasets / remote objects
@@ -118,8 +109,22 @@
 	- [ ] directory readmes, project root readme
 	- [ ] task.md / state.md esque things
 
-- [ ] bin/setup bin/teardown
-- [ ] gem / app 
+- [ ] build
+	- [ ] bin/setup bin/teardown
+	- [ ] gem / app
 	- [ ] split into toygun and app
+	- [ ] activesupport date time (ugh)
 
-- [ ] activesupport date time (ugh)
+- [ ] plugins / layering
+	- [x] create resources directory
+	- [x] attr becomes a sequel plugin
+	- [ ] state etc is still methods  (passing in transition table)
+	- [ ] layers: modules (state), plugins (attr), models (resources/tasks)
+	- [ ] resource as a plugin?
+	- [ ] leave open door for custom resource/task combos.
+
+	sti plugin with renames + task stuff
+	so like Resource should be resource, Resource::Task should be resource:task_name
+	maybe foo.task.start foo.task.running? Foo.create() start sets state to new & calls create
+	then if __new__ transition to latest in tick
+
