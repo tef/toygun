@@ -1,20 +1,19 @@
-- [x] pliny template
-- [x] prune pliny
-- [x] subtask.rb
-- [x] fix task leak in start / tasks should be unique per invocation
-- [x] indexes
-- [x] **args
-- [x] fix race condition in transition
-- [x] s/foreign/parent
-- [x] __internal__ states / __internal__ config
-- [x] split out files, duplicate logic (state.rb, resource.rb, task.rb)
-- [x] def_task
-- [x] datasets
-- [x] resource
-- [x] codec / specs for decorated json
-- [x] internal attrs have internal names
-
-
+- [x] bootstrap
+	- [x] pliny template
+	- [x] prune pliny
+	- [x] subtask.rb
+	- [x] fix task leak in start / tasks should be unique per invocation
+	- [x] indexes
+	- [x] **args
+	- [x] fix race condition in transition
+	- [x] s/foreign/parent
+	- [x] __internal__ states / __internal__ config
+	- [x] split out files, duplicate logic (state.rb, resource.rb, task.rb)
+	- [x] def_task
+	- [x] datasets
+	- [x] resource
+	- [x] codec / specs for decorated json
+	- [x] internal attrs have internal names
 
 - [ ] scheduler
 	- [x] redis
@@ -23,7 +22,7 @@
 	- [x] redis lock
 	- [x] worker / clock (send uuids in queue)
 	- [ ] encoded queues {header:v, header:v, body: {msg}}
-	- [ ] ttls
+	- [ ] ttl in header
 	- [ ] encrypted queues
 	- [ ] scheduler (registry) / try_exclusively
 	- [ ] timeouts
@@ -41,13 +40,13 @@
 	- [x] field uses custom encoder to handle Resources, Tasks stored in attrs
 	- [ ] field names are checked on save/restore
 	- [ ] sti support / subclassing
+	- [ ] field schemas are versioned (backfil/write-up)
 	- [ ] encrypted fields
 	- [ ] `field :name, type: Class` optional typecheck
-	- [ ] field schemas are versioned (backfil/write-up)
 
-- [ ] encryption
+- [ ] encryption (aka attr_vault)
 	- [x] fernet
-	- [ ] keyring/Config
+	- [ ] keyring/Config/rotation (a1, b2, c3, ..., z9
 	- [ ] EncryptedQueue
 	- [ ] encrypted_field
 
@@ -81,15 +80,18 @@
 	- [ ] panic state
 	- [ ] on_panic :escalate in tasks? maybe panic as exception
 	      model, i.e task panics goes up ownership chain until handled
+	- [ ] tasks is *active* tasks
+
 
 - [ ] api server / client
-	- [ ] server using decorated json / remote datasets / remote objects
-	- [ ] reflection for methods, state, associations
+	- [ ] server routes to live objects
+	- [ ] live obejcts get serialized with methods
+		using  reflection for methods, state, associations
  	- [ ] client using decorated json
 	- [ ] html interface
-	- [ ] breakdown pages
-	- [ ] bouncer
-	- [ ] cli client
+	- [ ] breakdown pages / pagination / dataset results
+	- [ ] bouncer/auth
+	- [ ] cli client / slack bot
 	- [ ] caching
 
 - [ ] logging / metrics / errors
@@ -98,6 +100,8 @@
 	- [ ] error handling / rollbar
 	- [ ] notifications
 
+- [ ] panics
+	- [ ] email, pd, slack
 
 - [ ] docs
 	- [ ] directory readmes, project root readme
@@ -112,14 +116,14 @@
 - [ ] plugins / layering
 	- [x] create resources directory
 	- [x] attr becomes a sequel plugin
-	- [ ] state etc is still methods  (passing in transition table)
-	- [ ] layers: modules (state), plugins (attr), models (resources/tasks)
-	- [ ] resource as a plugin?
+	- [ ] layers: modules (state), plugins (attr&renamable sti), models (resources/tasks)
+	- [ ] resource as a plugin eventually
 	- [ ] leave open door for custom resource/task combos.
 
-	sti plugin with renames + task stuff
-	so like Resource should be resource, Resource::Task should be resource:task_name
+- [ ] (aws?) example code
+
+
+- [ ] maybe
 	maybe foo.task.start foo.task.running? Foo.create() start sets state to new & calls create
 	then if __new__ transition to latest in tick
 
-- [ ] (aws?) example code
