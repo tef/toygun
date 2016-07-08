@@ -24,14 +24,9 @@
 	- [ ] encoded queues / encrypted queues using attrs like thing to make json string
 	- [ ] worker partitoning / priority / worker leases
 	- [ ] logs/notices
+	- [ ] timeouts
+	- [ ] threading
 
-- [ ] layering
-	- [ ] add in all members of schema into Models
-	- [ ] state becomes a sequel plugin (passing in transition table)
-	- [ ] attr becomes a sequel plugin
-	- [ ] resource, task use plugins, move into models (& out of toygun)
-	- [ ] layers: modules (state), plugins (attr), models (resources/tasks)
-	- [ ] leave open door for custom resource/task combos.
 
 - [ ] json attrs
 	- [ ] `field :name` generates getter/setter, no diff between nil value and del key
@@ -86,6 +81,14 @@
 	- [ ] panic state: panic when tasks are panic
 	- [ ] on_panic :escalate in tasks? maybe panic as exception
 	      model, i.e task panics goes up ownership chain until handled
+
+- [ ] layering
+	- [ ] add in all members of schema into Models
+	- [ ] state becomes a sequel plugin (passing in transition table)
+	- [ ] attr becomes a sequel plugin
+	- [ ] resource, task use plugins, move into models (& out of toygun)
+	- [ ] layers: modules (state), plugins (attr), models (resources/tasks)
+	- [ ] leave open door for custom resource/task combos.
 
 - [ ] api server / client
 	- [ ] server using decorated json / remote datasets / remote objects

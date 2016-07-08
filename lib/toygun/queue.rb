@@ -20,7 +20,7 @@ module Toygun
     end
 
     def pop
-      msg = redis.blpop
+      msg = redis.lpop queue
     end
   end
   

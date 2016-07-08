@@ -19,13 +19,13 @@ module Toygun
       end
     EOS
 
-    def self.with_redis_lock(klass, uuid, expire: 60.seconds, &block)
+    def self.with_redis_lock(klass, uuid, expire_secs: 60, &block)
       lock_id = SecureRandom.uuid
       key = "lock:#{klass.table_name}:#{uuid}"
       locked = false
 
       begin
-        locked = REDIS.eval(LUA_LOCK, keys: [key], argv: [lock_id, expire]) == 1
+        locked = REDIS.eval(LUA_LOCK, keys: [key], argv: [lock_id, expire_secs]) == 1
         if locked
           block.call
         end

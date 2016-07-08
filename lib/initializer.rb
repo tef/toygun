@@ -12,6 +12,8 @@ module Initializer
   def self.require_lib
     require! %w(
       lib/toygun
+      lib/resources/*
+      lib/resources/**/*
       lib/endpoints/base
       lib/endpoints/**/*
       lib/routes
