@@ -25,6 +25,7 @@ module Toygun
     one_to_many :tasks, class: 'Toygun::Task', key: :parent_uuid, primary_key: :uuid
 
     include State::InstanceMethods
+    extend ModelAttributes
 
     def_dataset_method :active do
       exclude(state: State::STOP)
