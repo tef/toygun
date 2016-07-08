@@ -14,4 +14,25 @@ class Example < Toygun::Resource
       stop
     end
   end
+
+  def_task :another do
+    field :time
+    field :echo
+
+    state "one" do
+      self.time = Time.now
+      transition "two"
+    end
+
+    state "two" do
+      puts "was #{time}"
+      self.echo = parent.echo
+      transition "three"
+    end
+
+    state "three" do
+      puts "other task #{echo}"
+      stop
+    end
+  end
 end

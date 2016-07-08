@@ -12,33 +12,8 @@ module Toygun
     class EncodeError < StandardError
     end
 
-    def register(klass, codec)
-      handlers[klass] = codec
-    end
-
-    def handlers
-      @handlers ||= {}
-    end
-
-    class ModelHandler
-      # codec.register Resource, ModelHandler.new(Resource)
-      def initialize(klass)
-        @klass = klass
-      end
-
-      def dump(obj, codec)
-        o[o.primary_key]
-      end
-
-      def parse(key, codec)
-        @klass[v]
-      end
-    end
-
-    def dump_one(o)
-      if handlers.include? o
-        {o.name => handlers[o].dump(o, self)}
-      elsif Symbol === o
+    def dump(o)
+      if Symbol === o
         {"Symbol" => o.to_s}
       elsif String === o
         o
@@ -53,11 +28,11 @@ module Toygun
       elsif o.nil?
         o
       elsif Array === o
-        o.map{|o| dump_one(o)}
+        o.map{|o| dump(o)}
       elsif Set === o
-        {"Set" => o.map{|o| dump_one(o)}}
+        {"Set" => o.map{|o| dump(o)}}
       elsif Hash === o
-        {"Hash": o.inject({}) {|h, (k,v)| h[dump_one(k)] = dump_one(v); h} }
+        {"Hash": o.inject({}) {|h, (k,v)| h[dump(k)] = dump(v); h} }
       elsif DateTime === o
         {"DateTime" => o.strftime("%FT%T.%NZ")}
       elsif Time === o
@@ -67,7 +42,7 @@ module Toygun
       end
     end
 
-    def parse_one(o)
+    def parse(o)
       if String === o
         o
       elsif Fixnum === o
@@ -81,22 +56,20 @@ module Toygun
       elsif o.nil?
         o
       elsif Array === o
-        o.map {|o| parse_one(o)}
+        o.map {|o| parse(o)}
       elsif Hash === o && o.size == 1
         k, v = o.entries.first
 
         if k == "Hash"
-          v.inject({}) {|h, (k,v)| h[parse_one(k)] = parse_one(v); h}
+          v.inject({}) {|h, (k,v)| h[parse(k)] = parse(v); h}
         elsif k == "DateTime"
           DateTime.strptime(v, "%FT%T.%L%Z")
         elsif k == "Time"
           Time.strptime(v, "%FT%T.%L%Z")
         elsif k == "Set"
-          v.inject(Set.new) {|s, o| s.add(parse_one(o));s }
+          v.inject(Set.new) {|s, o| s.add(parse(o));s }
         elsif k == "Symbol"
           v.to_sym
-        elsif handlers.include? k
-          handlers[k].parse(v, self)
         else
           raise DecodeError, "special unsupported #{o}"
         end
@@ -108,8 +81,7 @@ module Toygun
 
   class ObjectCodec < Codec
     def dump_obj(o)
-      raise "heck" if !self.handlers.include? o
-      o = dump_one(o)
+      o = dump(o)
       raise "heck" if !(Hash === o)
       o.to_json
     end
@@ -117,29 +89,26 @@ module Toygun
     def parse_obj(string)
       json = JSON.parse(string)
       raise "heck" if !(Hash === o)
-      o = parse_one(json)
-      raise "heck" if !self.handlers.include? o
+      o = parse(json)
       o
     end
   end
 
-  class RecordCodec < Codec
-    def dump_hash(o)
+  class JsonObjectCodec < Codec
+    def dump_json(o)
       h = o.inject({}) {|h, (k,v)| h.merge(dump_field(k,v))}
-      h.to_json
     end
 
     def dump_field(k,v)
-      {k => dump_one(v)}
+      {k => dump(v)}
     end
 
-    def parse_hash(string)
-      json = JSON.parse(string)
+    def parse_json(json)
       json.inject({}) {|h, (k,v)| h.merge(parse_field(k,v))}
     end
 
     def parse_field(k,v)
-      {k => parse_one(v)}
+      {k => parse(v)}
     end
   end
 end

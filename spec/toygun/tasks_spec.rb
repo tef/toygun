@@ -34,6 +34,9 @@ describe Toygun::Task do
         include Subtasks
 
         def_task "test" do
+          field :a
+          field :b
+
           state "beginning" do
             transition "middle"
           end
@@ -114,15 +117,15 @@ describe Toygun::Task do
     it 'should take args, and reset them on start' do
       dummy.test_task.stop
       dummy.test a: '1'
-      expect(dummy.test_task.attrs.to_h).to eq({"a" => '1'})
+      expect(dummy.test_task.attrs.to_h).to eq({a: '1'})
       dummy.test_task.stop
       dummy.test b: '1'
-      expect(dummy.test_task.attrs.to_h).to eq({"b" => '1'})
+      expect(dummy.test_task.attrs.to_h).to eq({b: '1'})
     end
     it 'should take args' do
       dummy.test_task.update(attrs: {})
       dummy.test_task.transition "beginning", b: '1'
-      expect(dummy.test_task.attrs).to eq({"b" => '1'})
+      expect(dummy.test_task.attrs).to eq({b: '1'})
     end
 
     it 'should not be running when stopped' do
