@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Toygun::TaskTransition do
-  let(:task) { Toygun::Task.find_or_create(parent_uuid: 'ffffffff-ffff-ffff-ffff-ffffffffffff', name: "stuff", state: "__stop__") }
+  let(:task) { Toygun::Task.find_or_create(resource_uuid: 'ffffffff-ffff-ffff-ffff-ffffffffffff', name: "stuff", state: "__stop__") }
   let(:time) { Time.now - 1000 }
 
   describe "a state" do
@@ -181,7 +181,7 @@ describe Toygun::Task do
   end
 
 
-  it "should have a parent" do
+  it "should have a resource" do
     expect(dummy.test_task.dummy_object.uuid).to eq(dummy.uuid)
     expect(dummy.test_task.dummy_object).to eq(dummy)
   end

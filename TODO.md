@@ -22,14 +22,15 @@
 	- [x] redis queue
 	- [x] redis lock
 	- [x] worker / clock (send uuids in queue)
+	- [ ] encoded queues {header:v, header:v, body: {msg}}
+	- [ ] ttls
 	- [ ] encrypted queues
-	- [ ] encoded queues
-	- [ ] worker partitoning / priority / worker leases
 	- [ ] scheduler (registry) / try_exclusively
-	- [ ] logs/notices
 	- [ ] timeouts
 	- [ ] threading
-
+	- [ ] worker partitoning / priority / worker leases
+	- [ ] rate limiting
+	- [ ] error handling
 
 - [ ] json attrs
 	- [x] `field :name` generates getter/setter, no diff between nil value and del key
@@ -37,14 +38,12 @@
 	- [x] attrs is a sequel plugin
 	- [x] hide the json field, and only allow it through accessors
 		sequel :composition on json_attrs/attrs
-	- [ ] only allow what is a field to be dumped
-	- [ ] field uses custom encoder to handle Resources, Tasks stored in attrs
-	- [ ] fields are checked on save
-	- [ ] fields are checked in start/transition
-	- [ ] `field :name, Class` optional typecheck
+	- [x] field uses custom encoder to handle Resources, Tasks stored in attrs
+	- [ ] field names are checked on save/restore
 	- [ ] sti support / subclassing
-	- [ ] field schemas are versioned (backfil/write-up)
 	- [ ] encrypted fields
+	- [ ] `field :name, type: Class` optional typecheck
+	- [ ] field schemas are versioned (backfil/write-up)
 
 - [ ] encryption
 	- [x] fernet
@@ -53,36 +52,32 @@
 	- [ ] encrypted_field
 
 - [ ] encoding
-	- [ ] custom encoder/decoders for embedded objects
-	- [ ] custom encoders for fields in hash
-	- [ ] encrypted decorated json object {'Vault':[key_id, secret]}
+	- [x] custom encoders for fields in hash
+	- [x] attrs uses custom encoder
 	- [ ] redis queue uses custom encoder (sends over versioned message)
-	- [ ] attrs uses custom encoder (versioned attrs)
 	- [ ] api uses custom encoder (urls)
 
 - [ ] states
+	- [ ] timeouts / panics
 	- [ ] customizable archival / expiry
 	- [ ] task.start race from new to first state
 	- [ ] use upserts and avoid advisory locking
 	- [ ] start_every (using bucket) / scheduler
 	- [ ] circuit breaking
 	- [ ] renames
-	- [ ] panic state
 
 - [ ] tasks
 	- [ ] should_start? should_stop?
 	- [ ] rate limits ? every n.hours? buckets?
 	- [ ] task triggers & subclasses lookup/fixes for task triggers
-	- [ ] timeouts / panics
 	- [ ] specs for duplicates, leaks in past
 	- [ ] missing transition etc
-	- [ ] glue to resources? i.e :resource not :parent (cf models layer)
 
 - [ ] resources
 	- [x] spec resource
 	- [x] bake in resource lifecycle
-	- [ ] parenting
-	- [ ] datasets
+	- [x] parenting
+	- [x] datasets
 	- [ ] panic state
 	- [ ] on_panic :escalate in tasks? maybe panic as exception
 	      model, i.e task panics goes up ownership chain until handled
@@ -103,7 +98,6 @@
 	- [ ] error handling / rollbar
 	- [ ] notifications
 
-- [ ] (aws?) example code
 
 - [ ] docs
 	- [ ] directory readmes, project root readme
@@ -128,3 +122,4 @@
 	maybe foo.task.start foo.task.running? Foo.create() start sets state to new & calls create
 	then if __new__ transition to latest in tick
 
+- [ ] (aws?) example code

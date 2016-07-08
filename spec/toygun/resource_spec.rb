@@ -154,7 +154,7 @@ describe Toygun::Resource do
   end
 
 
-  it "should have a parent" do
+  it "should have a resource" do
     expect(dummy.test_task.dummy_resource.uuid).to eq(dummy.uuid)
     expect(dummy.test_task.dummy_resource).to eq(dummy)
   end

@@ -2,6 +2,7 @@ module Toygun
   module Subtasks
     module ClassMethods
       def def_task(name, &block)
+        # define parent accessor
         Task.define_task_on(self, name, &block)
       end
     end
@@ -16,7 +17,7 @@ module Toygun
     end
 
     def self.included(base)
-      base.one_to_many :tasks, class: 'Toygun::Task', key: :parent_uuid, primary_key: :uuid
+      base.one_to_many :tasks, class: 'Toygun::Task', key: :resource_uuid, primary_key: :uuid
       base.extend ClassMethods
       base.include InstanceMethods
     end

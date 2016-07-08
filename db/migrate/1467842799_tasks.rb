@@ -2,7 +2,7 @@ Sequel.migration do
   up do
     create_table :tasks do 
       uuid :uuid, default: Sequel.function(:uuid_generate_v4), primary_key: true
-      uuid :parent_uuid, null:false
+      uuid :resource_uuid, null:false
 
       String :name, null: false
       String :state, null: false #, default: "__new__"
@@ -12,16 +12,16 @@ Sequel.migration do
       timestamptz :created_at, null:false
       timestamptz :updated_at, null:false
 
-      index :parent_uuid
+      index :resource_uuid
 
       index [:created_at]
       index [:updated_at]
       index [:name, :updated_at, :state]
 
-      index [:parent_uuid, :name, :state]
+      index [:resource_uuid, :name, :state]
 
-      index [:parent_uuid, :name], where: "state <> '__stop__'", unique:true
-      index [:parent_uuid, :name], name: "parent_uuid_name_all_index"
+      index [:resource_uuid, :name], where: "state <> '__stop__'", unique:true
+      index [:resource_uuid, :name], name: "resource_uuid_name_all_index"
     end
 
     create_table :task_transitions do
@@ -43,6 +43,7 @@ Sequel.migration do
 
     create_table :resources do 
       uuid :uuid, default: Sequel.function(:uuid_generate_v4), primary_key: true
+      uuid :parent_uuid, null:true
 
       String :name, null: false
       String :state, null: false,  default: "__new__"
@@ -54,6 +55,7 @@ Sequel.migration do
 
       index [:created_at]
       index [:updated_at]
+      index [:parent_uuid, :state], where: "state <> '__stop__'"
       index [:name, :updated_at, :state]
       index [:state], where: "state <> '__stop__'"
       index [:name, :state], where: "state <> '__stop__'"

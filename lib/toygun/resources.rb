@@ -22,7 +22,9 @@ module Toygun
     plugin :timestamps, update_on_create: true
 
     one_to_many :transitions, key: :resource_uuid, primary_key: :uuid, order: Sequel.desc(:step), class: ResourceTransition
-    one_to_many :tasks, class: 'Toygun::Task', key: :parent_uuid, primary_key: :uuid
+    one_to_many :tasks, class: 'Toygun::Task', key: :resource_uuid, primary_key: :uuid
+    one_to_many :children, class: 'Toygun::Resource', key: :parent_uuid, primary_key: :uuid
+    one_to_one :parent, class: 'Toygun::Resource', key: :uuid, primary_key: :parent_uuid
 
     include State::InstanceMethods
     plugin ModelAttributes

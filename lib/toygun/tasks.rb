@@ -26,16 +26,16 @@ module Toygun
         exclude(state: State::STOP)
     end
 
-    def self.find_recent_for(parent)
-      self.where(parent_uuid: parent.uuid).order_by(Sequel.desc(:created_at, nulls: :last)).first
+    def self.find_recent_for(resource)
+      self.where(resource_uuid: resource.uuid).order_by(Sequel.desc(:created_at, nulls: :last)).first
     end
 
-    def self.find_or_create_for(parent)
+    def self.find_or_create_for(resource)
       self.db.transaction do
-        if Locks.pg_try_advisory_xact_lock(self, parent.uuid)
-          task = self.where(parent_uuid: parent.uuid).order_by(Sequel.desc(:created_at, nulls: :last)).first
+        if Locks.pg_try_advisory_xact_lock(self, resource.uuid)
+          task = self.where(resource_uuid: resource.uuid).order_by(Sequel.desc(:created_at, nulls: :last)).first
           if task.nil?
-            task = self.create(parent_uuid: parent.uuid) do |t|
+            task = self.create(resource_uuid: resource.uuid) do |t|
               t.state = State::STOP
               t.attrs = {}
             end
@@ -45,12 +45,12 @@ module Toygun
       end
     end
 
-    def self.start_for(parent, **opts)
+    def self.start_for(resource, **opts)
       db.transaction do
-        if Locks.pg_try_advisory_xact_lock(self, parent.uuid)
-          task = self.where(parent_uuid: parent.uuid).exclude(state: State::STOP).order_by(Sequel.desc(:created_at, nulls: :last)).first
+        if Locks.pg_try_advisory_xact_lock(self, resource.uuid)
+          task = self.where(resource_uuid: resource.uuid).exclude(state: State::STOP).order_by(Sequel.desc(:created_at, nulls: :last)).first
           if task.nil?
-            task = self.create(parent_uuid: parent.uuid) do |t|
+            task = self.create(resource_uuid: resource.uuid) do |t|
               t.state = State::NEW
               t.attrs = opts
             end
@@ -61,28 +61,28 @@ module Toygun
       end
     end
 
-    def self.define_task_on(parent, name, &block)
+    def self.define_task_on(resource, name, &block)
       class_name = name.to_s.split(/_/).map{ |word| word.capitalize }.join('').sub("!","")
-      parent_name = parent.to_s.split('::')[-1].split(/(?=[A-Z]+)/).map(&:downcase).join("_").to_sym
+      resource_name = resource.to_s.split('::')[-1].split(/(?=[A-Z]+)/).map(&:downcase).join("_").to_sym
 
-      parent.class_eval "class #{class_name} < #{self}; end"
+      resource.class_eval "class #{class_name} < #{self}; end"
 
-      t = parent.const_get(class_name)
+      t = resource.const_get(class_name)
 
       t.class_eval do 
-        many_to_one :parent, class: parent, key: :parent_uuid, primary_key: :uuid
-        alias_method parent_name, :parent
+        many_to_one :resource, class: resource, key: :resource_uuid, primary_key: :uuid
+        alias_method resource_name, :resource if resource_name != 'resource' 
       end
 
       t.class_eval &block
 
-      parent.class_eval do
+      resource.class_eval do
         define_method(name.to_s+"_task") do
           t.find_or_create_for(self)
         end
 
         def_dataset_method("#{name}_tasks") do
-         t.where('parent_uuid in ?', self.select(:uuid))
+         t.where('resource_uuid in ?', self.select(:uuid))
         end
 
         define_method(name) do |**opts|
@@ -90,8 +90,8 @@ module Toygun
         end
 
         def_dataset_method("#{name}") do |**opts|
-          all.each do |parent|
-            t.start_for(parent, **opts)
+          all.each do |resource|
+            t.start_for(resource, **opts)
           end
         end
 

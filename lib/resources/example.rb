@@ -26,7 +26,7 @@ class Example < Toygun::Resource
 
     state "two" do
       puts "was #{time}"
-      self.echo = parent.echo
+      self.echo = resource.echo
       transition "three"
     end
 
