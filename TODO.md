@@ -27,6 +27,7 @@
 	- [ ] ttl in header
 	- [ ] encrypted queues
 	- [ ] scheduler (registry) / try_exclusively
+	- [ ] single worker (inspecting scheduler)
 	- [ ] timeouts
 	- [ ] threading
 	- [ ] worker partitoning / priority / worker leases
@@ -39,9 +40,10 @@
 	- [x] attrs is a sequel plugin
 	- [x] hide the json field, and only allow it through accessors
 		sequel :composition on json_attrs/attrs
+	- [x] fields operator
+	- [x] sti support / subclassing
 	- [x] field uses custom encoder to handle Resources, Tasks stored in attrs
 	- [ ] field names are checked on save/restore (and thus create/transition)
-	- [ ] sti support / subclassing
 	- [ ] field schemas are versioned (backfil/write-up)
 	- [ ] `field :name, type: Class` optional typecheck
 	- [ ] encrypted fields
@@ -100,6 +102,7 @@
 	- [x] bake in resource lifecycle
 	- [x] parenting
 	- [x] datasets
+	- [x] tasks class method
 	- [ ] panic state
 	- [ ] on_panic :escalate in tasks? maybe panic as exception
 	      model, i.e task panics goes up ownership chain until handled

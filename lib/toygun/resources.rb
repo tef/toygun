@@ -33,8 +33,20 @@ module Toygun
       exclude(state: State::STOP)
     end
 
+    def self.tasks
+      if superclass.respond_to?(:tasks)
+        {}.merge(superclass.tasks).merge(self.class_tasks)
+      else
+        class_tasks
+      end
+    end
+
+    def self.class_tasks
+      @tasks ||= {}
+    end
+
     def self.def_task(name, &block)
-      Task.define_task_on(self, name, &block)
+      class_tasks[name] = Task.define_task_on(self, name, &block)
     end
 
     def self.has_state?(new_state)

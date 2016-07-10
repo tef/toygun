@@ -47,8 +47,22 @@ module Toygun
     end
 
     module ClassMethods
+      def fields
+        if superclass.respond_to?(:fields)
+          [].concat(superclass.fields).concat(self.class_fields)
+        else
+          @fields ||= []
+        end
+      end
+
+      def class_fields
+        @fields ||= []
+      end
+
       def field(name)
         name = name.to_sym
+        raise "defined" if fields.include?(name)
+        class_fields << name
         self.class_eval do
           define_method("#{name}") do
             self.attrs[name]
