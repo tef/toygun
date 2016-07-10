@@ -4,6 +4,10 @@ module Toygun
     STOP = '__stop__'.freeze
     PANIC = '__panic__'.freeze
 
+    def self.builtin_states
+      [ NEW, STOP, PANIC ]
+    end
+
     class Panic < StandardError; end
     class Missing < StandardError; end
 
@@ -48,7 +52,7 @@ module Toygun
 
       def transition(new_state, **opts)
         current_state = state
-        raise Missing, new_state if ![PANIC, STOP].include?(new_state) && !self.class.task_states[new_state]
+        raise Missing, new_state if !self.class.has_state?(new_state)
         Toygun::Task.db.transaction do
           latest_state = transitions.first
           if latest_state.nil? || latest_state.to == current_state
@@ -66,8 +70,8 @@ module Toygun
     end
 
     module ClassMethods
-      def task_states
-        raise "missing"
+      def has_state?(new_state)
+        State::builtin_states.include?(new_state)
       end
     end
   end

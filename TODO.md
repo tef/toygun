@@ -55,7 +55,7 @@
 - [ ] api server / client
 	- [ ] server routes to live objects (use sinatra and put in pliny router)
 	- [ ] live obejcts get serialized with methods (custom encoder)
-		using  reflection for methods, state, associations
+		using  reflection for fields, state, associations
  	- [ ] client using decorated json
 	- [ ] html interface
 	- [ ] breakdown pages / pagination / dataset results
@@ -72,10 +72,16 @@
 
 # framework
 
+- [ ] alarms/panics
+	- [ ] task or resource can have multiple types of alarm attached
+	- [ ] active / snooze / closed life cycle
+	- [ ] email, pd, slack
+	  i.e task panic/alarm merge
+
 - [ ] states
 	- [x] move tick / state def to tasks
+	- [x] task.start race from new to first state
 	- [ ] customizable archival / expiry
-	- [ ] task.start race from new to first state
 	- [ ] use upserts and avoid advisory locking
 	- [ ] start_every (using bucket) / scheduler
 	- [ ] circuit breaking
@@ -100,12 +106,6 @@
 	- [ ] tasks is *active* tasks
 	- [ ] task :__new__, task :__stop__ as overrides for start/stop behaviour
 
-- [ ] alarms/panics
-	- [ ] task or resource can have multiple types of alarm attached
-	- [ ] active / snooze / closed life cycle
-	- [ ] email, pd, slack
-	  i.e task panic/alarm merge
-
 # environment/ecosystem/support/examples
 
 - [ ] docs
@@ -127,9 +127,10 @@
 	- [ ] leave open door for custom resource/task combos.
 
 
-- [ ] (aws?) example code
-	- [ ] something stateless or managed? rds? memcache
-
 - [ ] maybe
+	- [ ] (aws?) example code
+	- [ ] something stateless or managed? rds? memcache
+	- [ ] heroku addon?
+
 	maybe foo.task.start foo.task.running? Foo.create() start sets state to new & calls create
 	then if __new__ transition to latest in tick

@@ -88,14 +88,14 @@ describe Toygun::Task do
 
     it 'can run active tasks' do
       dummy.test_task.transition "beginning"
-      dummy.run_active_tasks
+      dummy.tick
       expect(dummy.test_task.state).to eq("middle")
     end
     it 'can run active tasks but not stopped ones' do
       dummy.test_task.transition "beginning"
       expect(dummy.test_task.state).to eq("beginning")
       dummy.another_task.stop
-      dummy.run_active_tasks
+      dummy.tick
       expect(dummy.test_task.state).to eq("middle")
       expect(dummy.another_task.state).to eq("__stop__")
     end
@@ -151,7 +151,7 @@ describe Toygun::Task do
 
     it 'should tick' do
       dummy.test
-      expect(dummy.test_task.state).to eq("beginning")
+      expect(dummy.test_task.state).to eq("__new__")
       dummy.test_task.tick
       expect(dummy.test_task.state).to eq("middle")
       dummy.test_task.tick

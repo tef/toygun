@@ -124,7 +124,7 @@ describe Toygun::Resource do
 
     it 'should tick' do
       dummy.test
-      expect(dummy.test_task.state).to eq("beginning")
+      expect(dummy.test_task.state).to eq("__new__")
       dummy.test_task.tick
       expect(dummy.test_task.state).to eq("middle")
       dummy.test_task.tick

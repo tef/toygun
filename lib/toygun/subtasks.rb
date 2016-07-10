@@ -8,7 +8,7 @@ module Toygun
     end
 
     module InstanceMethods
-      def run_active_tasks
+      def tick
         tasks_dataset.active.each do |t|
           # err handling
           t.tick

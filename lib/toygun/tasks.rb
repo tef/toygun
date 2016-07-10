@@ -30,6 +30,10 @@ module Toygun
       @task_states ||= {}
     end
 
+    def self.has_state?(new_state)
+      State.builtin_states.include?(new_state) || self.task_states.include?(new_state)
+    end
+
     def_dataset_method :active do
         exclude(state: State::STOP)
     end
@@ -81,7 +85,6 @@ module Toygun
               t.state = State::NEW
               t.attrs = opts
             end
-            task.start # todo fix tests
           end
           task
         end

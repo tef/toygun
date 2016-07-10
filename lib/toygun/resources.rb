@@ -37,13 +37,12 @@ module Toygun
       Task.define_task_on(self, name, &block)
     end
 
-    def self.task_states
-      {
-        "starting" => Proc.new {},
-        "running" => Proc.new {},
-        "stopping" => Proc.new {},
-        "restarting" => Proc.new {},
-      }
+    def self.has_state?(new_state)
+      State.builtin_states.include?(new_state) || self.resource_states.include?(new_state)
+    end
+
+    def self.resource_states
+      [ "starting", "running", "stopping", "restarting",]
     end
 
     def tick
