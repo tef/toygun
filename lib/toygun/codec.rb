@@ -13,6 +13,14 @@ module Toygun
     end
 
     def dump(o)
+      dump_one(o)
+    end
+
+    def parse(o)
+      parse_one(o)
+    end
+
+    def dump_one(o)
       if Symbol === o
         {"Symbol" => o.to_s}
       elsif String === o
@@ -28,11 +36,11 @@ module Toygun
       elsif o.nil?
         o
       elsif Array === o
-        o.map{|o| dump(o)}
+        o.map{|o| dump_one(o)}
       elsif Set === o
-        {"Set" => o.map{|o| dump(o)}}
+        {"Set" => o.map{|o| dump_one(o)}}
       elsif Hash === o
-        {"Hash": o.inject({}) {|h, (k,v)| h[dump(k)] = dump(v); h} }
+        {"Hash": o.inject({}) {|h, (k,v)| h[dump_one(k)] = dump_one(v); h} }
       elsif DateTime === o
         {"DateTime" => o.strftime("%FT%T.%NZ")}
       elsif Time === o
@@ -42,7 +50,7 @@ module Toygun
       end
     end
 
-    def parse(o)
+    def parse_one(o)
       if String === o
         o
       elsif Fixnum === o
@@ -56,18 +64,18 @@ module Toygun
       elsif o.nil?
         o
       elsif Array === o
-        o.map {|o| parse(o)}
+        o.map {|o| parse_one(o)}
       elsif Hash === o && o.size == 1
         k, v = o.entries.first
 
         if k == "Hash"
-          v.inject({}) {|h, (k,v)| h[parse(k)] = parse(v); h}
+          v.inject({}) {|h, (k,v)| h[parse_one(k)] = parse_one(v); h}
         elsif k == "DateTime"
           DateTime.strptime(v, "%FT%T.%L%Z")
         elsif k == "Time"
           Time.strptime(v, "%FT%T.%L%Z")
         elsif k == "Set"
-          v.inject(Set.new) {|s, o| s.add(parse(o));s }
+          v.inject(Set.new) {|s, o| s.add(parse_one(o));s }
         elsif k == "Symbol"
           v.to_sym
         else
@@ -81,15 +89,15 @@ module Toygun
 
   class ObjectCodec < Codec
     def dump_obj(o)
-      o = dump(o)
+      o = dump_one(o)
       raise "heck" if !(Hash === o)
       o.to_json
     end
 
     def parse_obj(string)
-      json = JSON.parse(string)
+      json = JSON.parse_one(string)
       raise "heck" if !(Hash === o)
-      o = parse(json)
+      o = parse_one(json)
       o
     end
   end
@@ -100,7 +108,7 @@ module Toygun
     end
 
     def dump_field(k,v)
-      {k => dump(v)}
+      {k => dump_one(v)}
     end
 
     def parse_json(json)
@@ -108,7 +116,7 @@ module Toygun
     end
 
     def parse_field(k,v)
-      {k => parse(v)}
+      {k.to_sym => parse_one(v)}
     end
   end
 end

@@ -1,7 +1,7 @@
 module Toygun
   module ModelAttributes
     class AttrCodec < JsonObjectCodec
-      def dump(o)
+      def dump_one(o)
         if o.class < Sequel::Model
           {"Model": [ o.class, o[o.primary_key]] }
         else
@@ -9,11 +9,7 @@ module Toygun
         end
       end
 
-      def parse_field(k, v)
-        {k.to_sym => parse(v)}
-      end
-
-      def parse(o)
+      def parse_one(o)
         if Hash === o && o.size == 1
           k, i = o.entries.first
           if k == "Model"

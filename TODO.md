@@ -1,4 +1,4 @@
-- [x] bootstrap
+# bootstrap
 	- [x] pliny template
 	- [x] prune pliny
 	- [x] subtask.rb
@@ -15,13 +15,15 @@
 	- [x] codec / specs for decorated json
 	- [x] internal attrs have internal names
 
+# foundation layer
+
 - [ ] scheduler
 	- [x] redis
 	- [x] test harness
 	- [x] redis queue
 	- [x] redis lock
 	- [x] worker / clock (send uuids in queue)
-	- [ ] encoded queues {header:v, header:v, body: {msg}}
+	- [x] encoded queues {header:v, header:v, body: {msg}}
 	- [ ] ttl in header
 	- [ ] encrypted queues
 	- [ ] scheduler (registry) / try_exclusively
@@ -38,32 +40,46 @@
 	- [x] hide the json field, and only allow it through accessors
 		sequel :composition on json_attrs/attrs
 	- [x] field uses custom encoder to handle Resources, Tasks stored in attrs
-	- [ ] field names are checked on save/restore
+	- [ ] field names are checked on save/restore (and thus create/transition)
 	- [ ] sti support / subclassing
 	- [ ] field schemas are versioned (backfil/write-up)
-	- [ ] encrypted fields
 	- [ ] `field :name, type: Class` optional typecheck
+	- [ ] encrypted fields
 
 - [ ] encryption (aka attr_vault)
 	- [x] fernet
-	- [ ] keyring/Config/rotation (a1, b2, c3, ..., z9
+	- [ ] keyring/Config/rotation {0:fernet_key, 1:...}
 	- [ ] EncryptedQueue
 	- [ ] encrypted_field
 
-- [ ] encoding
-	- [x] custom encoders for fields in hash
-	- [x] attrs uses custom encoder
-	- [ ] redis queue uses custom encoder (sends over versioned message)
-	- [ ] api uses custom encoder (urls)
+- [ ] api server / client
+	- [ ] server routes to live objects (use sinatra and put in pliny router)
+	- [ ] live obejcts get serialized with methods (custom encoder)
+		using  reflection for methods, state, associations
+ 	- [ ] client using decorated json
+	- [ ] html interface
+	- [ ] breakdown pages / pagination / dataset results
+	- [ ] bouncer/auth
+	- [ ] cli client / slack bot
+	- [ ] caching
+
+- [ ] logging / metrics / errors
+	- [ ] log table
+	- [ ] queue/tick metrics (max ticks, worker throughput)
+	- [ ] error handling / rollbar
+	- [ ] notifications
+
+# framework
 
 - [ ] states
-	- [ ] timeouts / panics
+	- [ ] move tick / state def to tasks
 	- [ ] customizable archival / expiry
 	- [ ] task.start race from new to first state
 	- [ ] use upserts and avoid advisory locking
 	- [ ] start_every (using bucket) / scheduler
 	- [ ] circuit breaking
 	- [ ] renames
+-	- [ ] panic support
 
 - [ ] tasks
 	- [ ] should_start? should_stop?
@@ -81,33 +97,22 @@
 	- [ ] on_panic :escalate in tasks? maybe panic as exception
 	      model, i.e task panics goes up ownership chain until handled
 	- [ ] tasks is *active* tasks
+	- [ ] task :__new__, task :__stop__ as overrides for start/stop behaviour
 
-
-- [ ] api server / client
-	- [ ] server routes to live objects
-	- [ ] live obejcts get serialized with methods
-		using  reflection for methods, state, associations
- 	- [ ] client using decorated json
-	- [ ] html interface
-	- [ ] breakdown pages / pagination / dataset results
-	- [ ] bouncer/auth
-	- [ ] cli client / slack bot
-	- [ ] caching
-
-- [ ] logging / metrics / errors
-	- [ ] log table
-	- [ ] queue/tick metrics (max ticks, worker throughput)
-	- [ ] error handling / rollbar
-	- [ ] notifications
-
-- [ ] panics
+- [ ] alarms/panics
+	- [ ] task or resource can have multiple types of alarm attached
+	- [ ] active / snooze / closed life cycle
 	- [ ] email, pd, slack
+	  i.e task panic/alarm merge
+
+# environment/ecosystem/support/examples
 
 - [ ] docs
 	- [ ] directory readmes, project root readme
 	- [ ] task.md / state.md esque things
 
 - [ ] build
+	- [ ] single_worker (clock+worker)
 	- [ ] bin/setup bin/teardown
 	- [ ] gem / app
 	- [ ] split into toygun and app
@@ -120,10 +125,10 @@
 	- [ ] resource as a plugin eventually
 	- [ ] leave open door for custom resource/task combos.
 
-- [ ] (aws?) example code
 
+- [ ] (aws?) example code
+	- [ ] something stateless or managed? rds? memcache
 
 - [ ] maybe
 	maybe foo.task.start foo.task.running? Foo.create() start sets state to new & calls create
 	then if __new__ transition to latest in tick
-
