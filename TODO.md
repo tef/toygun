@@ -72,7 +72,7 @@
 # framework
 
 - [ ] states
-	- [ ] move tick / state def to tasks
+	- [x] move tick / state def to tasks
 	- [ ] customizable archival / expiry
 	- [ ] task.start race from new to first state
 	- [ ] use upserts and avoid advisory locking

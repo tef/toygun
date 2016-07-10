@@ -19,7 +19,7 @@ describe Toygun::Codec do
       Time.now.round,
     ]
     things.each do |x|
-      t = {"a" => x}
+      t = {a: x}
       enc_t = codec.dump_json(t).to_json
       dec_t = codec.parse_json(JSON.parse(enc_t))
       fin_t = codec.dump_json(dec_t).to_json

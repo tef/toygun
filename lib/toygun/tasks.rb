@@ -18,13 +18,34 @@ module Toygun
     one_to_many :transitions, key: :task_uuid, primary_key: :uuid, order: Sequel.desc(:step), class: TaskTransition
 
     include State::InstanceMethods
-    extend State::ClassMethods
 
     plugin ModelAttributes
+
+    def self.state name, &block
+      task_states[name] = block
+      self
+    end
+
+    def self.task_states
+      @task_states ||= {}
+    end
 
     def_dataset_method :active do
         exclude(state: State::STOP)
     end
+
+    def tick
+      return if state == State::STOP
+      raise State::Panic if state == State::PANIC
+      start if state == State::NEW
+
+      if block = self.class.task_states[state]
+        instance_eval &block
+      else
+        raise State::Missing, "Missing state defintion for #{state} in #{self.class}"
+      end
+    end
+
 
     def self.find_recent_for(resource)
       self.where(resource_uuid: resource.uuid).order_by(Sequel.desc(:created_at, nulls: :last)).first
@@ -54,7 +75,7 @@ module Toygun
               t.state = State::NEW
               t.attrs = opts
             end
-            task.start
+            task.start # todo fix tests
           end
           task
         end

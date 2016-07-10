@@ -24,18 +24,6 @@ module Toygun
         state != STOP
       end
 
-      def tick
-        return if state == STOP
-        raise Panic if state == PANIC
-        start if state == NEW
-
-        if block = self.class.task_states[state]
-          instance_eval &block
-        else
-          raise Missing, "Missing state defintion for #{state} in #{self.class}"
-        end
-      end
-
       def start(**opts)
         if state == NEW
           transition self.class.task_states.first[0], opts
@@ -84,13 +72,8 @@ module Toygun
     end
 
     module ClassMethods
-      def state name, &block
-        task_states[name] = block
-        self
-      end
-
       def task_states
-        @task_states ||= {}
+        raise "missing"
       end
     end
   end
