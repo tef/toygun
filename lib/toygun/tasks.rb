@@ -34,6 +34,12 @@ module Toygun
         exclude(state: State::STOP)
     end
 
+    def start(**opts)
+      if state == State::NEW
+        transition self.class.task_states.first[0], opts
+     end
+    end
+
     def tick
       return if state == State::STOP
       raise State::Panic if state == State::PANIC

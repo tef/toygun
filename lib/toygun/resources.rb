@@ -48,7 +48,7 @@ module Toygun
 
     def tick
       return if state == State::STOP
-      start if state == State::NEW
+      transition "starting" if state == State::NEW
 
       tasks_dataset.active.each do |t|
         t.tick

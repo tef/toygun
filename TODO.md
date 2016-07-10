@@ -65,6 +65,7 @@
 
 - [ ] logging / metrics / errors
 	- [ ] log table
+	- [ ] notices
 	- [ ] queue/tick metrics (max ticks, worker throughput)
 	- [ ] error handling / rollbar
 	- [ ] notifications

@@ -24,12 +24,6 @@ module Toygun
         state != STOP
       end
 
-      def start(**opts)
-        if state == NEW
-          transition self.class.task_states.first[0], opts
-        end
-      end
-
       def stop
         if state != STOP
           transition STOP
