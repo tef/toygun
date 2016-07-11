@@ -1,6 +1,9 @@
 module Toygun
   module ModelAttributes
     class AttrCodec < RecordCodec
+      def initialize(klass)
+        @klass = klass
+      end
       def dump_one(o)
         if o.class < Sequel::Model
           {"Model": [ o.class, o[o.primary_key]] }
@@ -29,17 +32,15 @@ module Toygun
       end
     end
 
-    Codec = AttrCodec.new
-
     def self.apply(name, *args, &block)
       name.plugin :composition
       name.composition :attrs,
         :composer => (proc do
-          Codec.parse(self.raw_attrs)
+          self.class.attr_codec.parse(self.raw_attrs)
         end),
         :decomposer => (proc do
           if o = compositions[:attrs]
-            self.raw_attrs = Codec.dump(attrs)
+            self.raw_attrs = self.class.attr_codec.dump(attrs)
           else
             self.raw_attrs = {}
           end
@@ -47,6 +48,10 @@ module Toygun
     end
 
     module ClassMethods
+      def attr_codec
+        AttrCodec.new(self)
+      end
+
       def fields
         if superclass.respond_to?(:fields)
           [].concat(superclass.fields).concat(self.class_fields)
