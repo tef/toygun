@@ -1,32 +1,54 @@
 # bootstrap
-	- [x] pliny template
-	- [x] prune pliny
-	- [x] subtask.rb
-	- [x] fix task leak in start / tasks should be unique per invocation
-	- [x] indexes
-	- [x] **args
-	- [x] fix race condition in transition
-	- [x] s/foreign/parent
-	- [x] __internal__ states / __internal__ config
-	- [x] split out files, duplicate logic (state.rb, resource.rb, task.rb)
-	- [x] def_task
-	- [x] datasets
-	- [x] resource
-	- [x] codec / specs for decorated json
-	- [x] internal attrs have internal names
+
+- [x] pliny template
+- [x] prune pliny
+- [x] subtask.rb
+- [x] fix task leak in start / tasks should be unique per invocation
+- [x] indexes
+- [x] **args
+- [x] fix race condition in transition
+- [x] s/foreign/parent
+- [x] __internal__ states / __internal__ config
+- [x] split out files, duplicate logic (state.rb, resource.rb, task.rb)
+- [x] def_task
+- [x] datasets
+- [x] resource
+- [x] codec / specs for decorated json
+- [x] internal attrs have internal names
+- [x] redis
+- [x] test harness
+- [x] redis queue
+- [x] redis lock
+- [x] worker / clock (send uuids in queue)
+- [x] encoded queues {header:v, header:v, body: {msg}}
+- [x] encrypted queues
+- [x] ttl in header
+- [x] `field :name` generates getter/setter, no diff between nil value and del key
+	notes, and just uses #modified!
+- [x] attrs is a sequel plugin
+- [x] hide the json field, and only allow it through accessors
+	sequel :composition on json_attrs/attrs
+- [x] fields operator
+- [x] sti support / subclassing
+- [x] field uses custom encoder to handle Resources, Tasks stored in attrs
+- [x] encrypted fields
+- [x] fernet
+- [x] config glue
+- [x] keyring/Config/rotation {0:fernet_key, 1:...}
+- [x] EncryptedQueue
+- [x] encrypted_field
+- [x] move tick / state def to tasks
+- [x] task.start race from new to first state
+- [x] spec resource
+- [x] bake in resource lifecycle
+- [x] parenting
+- [x] datasets
+- [x] tasks class method
 
 # foundation layer
 
 - [ ] scheduler
-	- [x] redis
-	- [x] test harness
-	- [x] redis queue
-	- [x] redis lock
-	- [x] worker / clock (send uuids in queue)
-	- [x] encoded queues {header:v, header:v, body: {msg}}
-	- [x] encrypted queues
-	- [x] ttl in header
-	- [ ] scheduler (registry) / try_exclusively
+	- [ ] scheduler (dataset/queue registry) / try_exclusively
 	- [ ] single worker (inspecting scheduler)
 	- [ ] timeouts
 	- [ ] threading
@@ -35,36 +57,18 @@
 	- [ ] error handling
 
 - [ ] json attrs
-	- [x] `field :name` generates getter/setter, no diff between nil value and del key
-		notes, and just uses #modified!
-	- [x] attrs is a sequel plugin
-	- [x] hide the json field, and only allow it through accessors
-		sequel :composition on json_attrs/attrs
-	- [x] fields operator
-	- [x] sti support / subclassing
-	- [x] field uses custom encoder to handle Resources, Tasks stored in attrs
-	- [x] encrypted fields
 	- [ ] field names are checked on save/restore (and thus create/transition)
 	- [ ] field schemas are versioned (backfil/write-up)
 	- [ ] `field :name, type: Class` optional typecheck
 
-- [x] encryption (aka attr_vault)
-	- [x] fernet
-	- [x] config glue
-	- [x] keyring/Config/rotation {0:fernet_key, 1:...}
-	- [x] EncryptedQueue
-	- [x] encrypted_field
-
 - [ ] api server / client
 	- [x] router
 	- [ ] actions / inspection of tasks/fields
-	- [ ] server routes to live objects (use sinatra and put in pliny router)
-	- [ ] live obejcts get serialized with methods (custom encoder)
-		using  reflection for fields, state, associations
- 	- [ ] client using decorated json
+	- [ ] return instances with fields, tasks, actions
+ 	- [ ] http client
 	- [ ] html interface
 	- [ ] breakdown pages / pagination / dataset results
-	- [ ] bouncer/auth
+	- [ ] bouncer / auth
 	- [ ] cli client / slack bot
 	- [ ] caching
 
@@ -78,34 +82,38 @@
 # framework
 
 - [ ] alarms/panics
+	i.e task panic/alarm merge
+		alarm :panic do state == PANIC end
+		alarm :timeout do state == TIMEOUT end
+		alarm :stuck page_when: do .... end
+		warning :stuck .... do ... end
+		
+	think about mute/pausing up front
+	think about pager controls/pager aggregation
 	- [ ] task or resource can have multiple types of alarm attached
 	- [ ] active / snooze / closed life cycle
 	- [ ] email, pd, slack
-	  i.e task panic/alarm merge
+- [ ] availability / restarting life cycle
+	online/offline/uncertain/known_offline
+	restarting 
 
 - [ ] states
-	- [x] move tick / state def to tasks
-	- [x] task.start race from new to first state
 	- [ ] customizable archival / expiry
 	- [ ] use upserts and avoid advisory locking
 	- [ ] start_every (using bucket) / scheduler
 	- [ ] circuit breaking
 	- [ ] renames
--	- [ ] panic support
+	- [ ] panic support
 
 - [ ] tasks
+	- [ ] Foo.task is shorthand for T < Task, Foo.add_task(T, :name)
 	- [ ] should_start? should_stop?
-	- [ ] rate limits ? every n.hours? buckets?
+	- [ ] rate limits ? every n.hours? repeating jobs?
 	- [ ] task triggers & subclasses lookup/fixes for task triggers
 	- [ ] specs for duplicates, leaks in past
 	- [ ] missing transition etc
 
 - [ ] resources
-	- [x] spec resource
-	- [x] bake in resource lifecycle
-	- [x] parenting
-	- [x] datasets
-	- [x] tasks class method
 	- [ ] panic state
 	- [ ] on_panic :escalate in tasks? maybe panic as exception
 	      model, i.e task panics goes up ownership chain until handled
@@ -113,6 +121,15 @@
 	- [ ] task :__new__, task :__stop__ as overrides for start/stop behaviour
 
 # environment/ecosystem/support/examples
+
+- [ ] specs
+	- [ ] queue
+	- [ ] task
+	- [ ] resource
+	- [ ] state
+	- [ ] codec / secret
+	- [ ] clock
+	- [ ] worker
 
 - [ ] docs
 	- [ ] directory readmes, project root readme
@@ -141,11 +158,3 @@
 	maybe foo.task.start foo.task.running? Foo.create() start sets state to new & calls create
 	then if __new__ transition to latest in tick
 
-class Foo < Task.on(Resource)
-
-maybe want to have 
-	define task on and subtask separately
-
-	i.e there is way to do  Foo < Resource, class T < Task, Foo.add_task(klass: T, as: :t)
-
-	same as t = Task.define_task_on(Resource, Foo
