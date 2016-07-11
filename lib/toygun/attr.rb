@@ -64,6 +64,22 @@ module Toygun
         @fields ||= []
       end
 
+      def encrypted_field(name)
+        name = name.to_sym
+        raise "defined" if fields.include?(name)
+        class_fields << name
+        self.class_eval do
+          define_method("#{name}") do
+            self.class.attr_codec.decrypt(self.attrs[name])
+          end
+
+          define_method("#{name}=") do |value|
+            self.modified! :attrs
+            self.attrs[name] = self.class.attr_codec.encrypt(value)
+          end
+        end
+      end
+
       def field(name)
         name = name.to_sym
         raise "defined" if fields.include?(name)

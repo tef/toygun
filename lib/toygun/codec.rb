@@ -50,6 +50,16 @@ module Toygun
       parse_one(o)
     end
 
+    def encrypt(o)
+      Secret.encrypt(dump_one([o]).to_json)
+    end
+
+    def decrypt(o)
+      o.decrypt do |m|
+        return parse_one(JSON.parse(m).first)
+      end
+    end
+
     def dump_one(o)
       if Symbol === o
         {"Symbol" => o.to_s}

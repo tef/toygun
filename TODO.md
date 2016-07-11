@@ -43,17 +43,17 @@
 	- [x] fields operator
 	- [x] sti support / subclassing
 	- [x] field uses custom encoder to handle Resources, Tasks stored in attrs
+	- [x] encrypted fields
 	- [ ] field names are checked on save/restore (and thus create/transition)
 	- [ ] field schemas are versioned (backfil/write-up)
 	- [ ] `field :name, type: Class` optional typecheck
-	- [ ] encrypted fields
 
-- [ ] encryption (aka attr_vault)
+- [x] encryption (aka attr_vault)
 	- [x] fernet
 	- [x] config glue
 	- [x] keyring/Config/rotation {0:fernet_key, 1:...}
 	- [x] EncryptedQueue
-	- [ ] encrypted_field
+	- [x] encrypted_field
 
 - [ ] api server / client
 	- [x] router
