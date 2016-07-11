@@ -52,11 +52,11 @@ module Toygun
       parse_one(o)
     end
 
-    def encrypt(o)
+    def encrypt_one(o)
       Secret.encrypt(dump_one([o]).to_json)
     end
 
-    def decrypt(o)
+    def decrypt_one(o)
       return nil if o == nil
       o.decrypt do |m|
         return parse_one(JSON.parse(m).first)

@@ -70,12 +70,12 @@ module Toygun
         class_fields << name
         self.class_eval do
           define_method("#{name}") do
-            self.class.attr_codec.decrypt(self.attrs[name])
+            self.class.attr_codec.decrypt_one(self.attrs[name])
           end
 
           define_method("#{name}=") do |value|
             self.modified! :attrs
-            self.attrs[name] = self.class.attr_codec.encrypt(value)
+            self.attrs[name] = self.class.attr_codec.encrypt_one(value)
           end
         end
       end
