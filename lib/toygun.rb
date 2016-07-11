@@ -1,4 +1,6 @@
 require_relative "toygun/init"
+require_relative "toygun/config"
+require_relative "toygun/vault"
 require_relative "toygun/codec"
 require_relative "toygun/attr"
 require_relative "toygun/state"

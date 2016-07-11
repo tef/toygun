@@ -12,6 +12,7 @@ module Config
   # Mandatory -- exception is raised for these variables when missing.
   mandatory :database_url, string
   mandatory :redis_url, string
+  mandatory :keychain, string
 
   # Optional -- value is returned or `nil` if it wasn't present.
   optional :app_name,            string

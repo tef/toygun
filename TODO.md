@@ -50,12 +50,14 @@
 
 - [ ] encryption (aka attr_vault)
 	- [x] fernet
+	- [ ] config glue
 	- [ ] keyring/Config/rotation {0:fernet_key, 1:...}
 	- [ ] EncryptedQueue
 	- [ ] encrypted_field
 
 - [ ] api server / client
 	- [x] router
+	- [ ] actions / inspection of tasks/fields
 	- [ ] server routes to live objects (use sinatra and put in pliny router)
 	- [ ] live obejcts get serialized with methods (custom encoder)
 		using  reflection for fields, state, associations
@@ -68,7 +70,7 @@
 
 - [ ] logging / metrics / errors
 	- [ ] log table
-	- [ ] notices
+	- [ ] notices/events/messages
 	- [ ] queue/tick metrics (max ticks, worker throughput)
 	- [ ] error handling / rollbar
 	- [ ] notifications
@@ -138,3 +140,12 @@
 
 	maybe foo.task.start foo.task.running? Foo.create() start sets state to new & calls create
 	then if __new__ transition to latest in tick
+
+class Foo < Task.on(Resource)
+
+maybe want to have 
+	define task on and subtask separately
+
+	i.e there is way to do  Foo < Resource, class T < Task, Foo.add_task(klass: T, as: :t)
+
+	same as t = Task.define_task_on(Resource, Foo
