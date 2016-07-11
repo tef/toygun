@@ -5,12 +5,14 @@ require 'net/http'
 
 module Toygun
   class Secret
-    def initialize(key_num, blob)
+    def initialize(tool, key_num, blob)
+      @tool = tool
       @key_num = key_num
       @blob = blob
     end
 
     def decrypt(&block)
+      raise if @tool != "fernet"
       key = Toygun.keychain.fetch(@key_num)
       v = Fernet.verifier(key, @blob)
       if v.valid?
@@ -22,15 +24,15 @@ module Toygun
 
     def self.encrypt(message)
       num = Toygun.keychain.keys.max
-      Secret.new(num, Fernet.generate(Toygun.keychain.fetch(num), message))
+      Secret.new("fernet", num, Fernet.generate(Toygun.keychain.fetch(num), message))
     end
 
     def dump
-      {"Secret":[@key_num, @blob]}
+      {"Secret":[@tool, @key_num, @blob]}
     end
 
     def self.parse(v)
-      Secret.new(v[0], v[1])
+      Secret.new(v[0], v[1], v[2])
     end
   end
 
@@ -55,6 +57,7 @@ module Toygun
     end
 
     def decrypt(o)
+      return nil if o == nil
       o.decrypt do |m|
         return parse_one(JSON.parse(m).first)
       end

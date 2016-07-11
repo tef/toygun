@@ -3,6 +3,7 @@ class Example < Toygun::Resource
 
   def_task :echo do
     field  :something
+    encrypted_field :secret
 
     state "one" do
       puts "one"
