@@ -13,6 +13,10 @@ Routes = Rack::Builder.new do
   use Rack::MethodOverride
   use Rack::SSL if Config.force_ssl?
 
+  map('/admin') do
+    run Toygun::AdminApi
+  end
+
   use Pliny::Router do
     # mount all endpoints here
     mount Endpoints::Health
