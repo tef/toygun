@@ -1,7 +1,7 @@
 module Toygun
   class AdminApi < Sinatra::Base
     # /Resource?uuid= ...
-    get "/:resource/" do
+    get "/:resource" do
       # return dataset / or
       # return instance
     end

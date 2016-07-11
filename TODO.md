@@ -55,6 +55,7 @@
 	- [ ] encrypted_field
 
 - [ ] api server / client
+	- [x] router
 	- [ ] server routes to live objects (use sinatra and put in pliny router)
 	- [ ] live obejcts get serialized with methods (custom encoder)
 		using  reflection for fields, state, associations
