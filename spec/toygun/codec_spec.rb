@@ -2,7 +2,18 @@ require 'spec_helper'
 require 'date'
 
 describe Toygun::Codec do
-  let(:codec) { Toygun::JsonObjectCodec.new }
+  let(:codec) { Toygun::RecordCodec.new }
+
+  it "handles secrets" do
+    secret = Toygun::Secret.encrypt("stuff")
+    ran = false
+    secret.decrypt do |m|
+      expect(m).to eq('stuff')
+      ran = true
+    end
+    expect(ran).to eq(true)
+
+  end
 
   it "encodes" do
     things = [
@@ -20,9 +31,9 @@ describe Toygun::Codec do
     ]
     things.each do |x|
       t = {a: x}
-      enc_t = codec.dump_json(t).to_json
-      dec_t = codec.parse_json(JSON.parse(enc_t))
-      fin_t = codec.dump_json(dec_t).to_json
+      enc_t = codec.dump(t).to_json
+      dec_t = codec.parse(JSON.parse(enc_t))
+      fin_t = codec.dump(dec_t).to_json
       expect(t).to eq(dec_t)
       expect(fin_t).to eq(enc_t)
     end

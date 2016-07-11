@@ -1,6 +1,6 @@
 module Toygun
   module ModelAttributes
-    class AttrCodec < JsonObjectCodec
+    class AttrCodec < RecordCodec
       def dump_one(o)
         if o.class < Sequel::Model
           {"Model": [ o.class, o[o.primary_key]] }
@@ -35,11 +35,11 @@ module Toygun
       name.plugin :composition
       name.composition :attrs,
         :composer => (proc do
-          Codec.parse_json(self.raw_attrs)
+          Codec.parse(self.raw_attrs)
         end),
         :decomposer => (proc do
           if o = compositions[:attrs]
-            self.raw_attrs = Codec.dump_json(attrs)
+            self.raw_attrs = Codec.dump(attrs)
           else
             self.raw_attrs = {}
           end

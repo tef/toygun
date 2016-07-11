@@ -7,7 +7,7 @@ module Toygun
       while true
         if q.size < 10  && ds.count > 0
           ds.select_map(:uuid).map do |uuid|
-            q.push({:class => "Resource", :primary_key => uuid, :method => "tick"})
+            q.push(uuid)
           end
         end
       sleep 1

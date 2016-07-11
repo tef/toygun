@@ -1,12 +1,16 @@
 module Toygun
   class RedisQueue
-    class Codec < JsonObjectCodec
-      def dump_json(o)
-        super(o).to_json
+    class Codec < RecordCodec
+      def dump(o)
+        msg = super(o).to_json
+        secret = dump_one(Secret.encrypt(msg)).to_json
       end
 
-      def parse_json(o)
-        super(JSON.parse(o))
+      def parse(o)
+        secret = parse_one(JSON.parse(o))
+        secret.decrypt do |msg|
+          return super(JSON.parse(msg))
+        end
       end
     end
 
@@ -18,8 +22,9 @@ module Toygun
 
     attr_reader :redis, :queue
 
-    def push(msg)
-      redis.rpush queue, @codec.dump_json(msg)
+    def push(message)
+      m = @codec.dump({body: message, time: Time.now})
+      redis.rpush queue, m
     end
 
     def size
@@ -31,8 +36,13 @@ module Toygun
     end
 
     def pop
-      raw_msg = redis.lpop queue
-      @codec.parse_json(raw_msg)
+      while true
+        raw_msg = redis.lpop queue
+        return if raw_msg == nil
+        message = @codec.parse(raw_msg)
+        next if message[:time] < (Time.now - 30*60) # 30 minutes
+        return message[:body]
+      end
     end
   end
 end

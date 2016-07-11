@@ -5,9 +5,8 @@ module Toygun
       q = RedisQueue.new(redis: REDIS, queue: "resources")
       while true
         if q.size > 0
-          if msg = q.pop
-            raise "heck" if msg[:class] != "Resource" || msg[:method] != "tick"
-            tick(Resource, msg[:primary_key])
+          if uuid = q.pop
+            tick(Resource, uuid)
           end
         else
           sleep 1

@@ -4,6 +4,36 @@ require 'stringio'
 require 'net/http'
 
 module Toygun
+  class Secret
+    def initialize(key_num, blob)
+      @key_num = key_num
+      @blob = blob
+    end
+
+    def decrypt(&block)
+      key = Toygun.keychain.fetch(@key_num)
+      v = Fernet.verifier(key, @blob)
+      if v.valid?
+        block.call(v.message)
+      else
+        raise "heck"
+      end
+    end
+
+    def self.encrypt(message)
+      num = Toygun.keychain.keys.max
+      Secret.new(num, Fernet.generate(Toygun.keychain.fetch(num), message))
+    end
+
+    def dump
+      {"Secret":[@key_num, @blob]}
+    end
+
+    def self.parse(v)
+      Secret.new(v[0], v[1])
+    end
+  end
+
   class Codec
     CONTENT_TYPE = "application/decorated-json"
 
@@ -45,6 +75,8 @@ module Toygun
         {"DateTime" => o.strftime("%FT%T.%NZ")}
       elsif Time === o
         {"Time" => o.strftime("%FT%T.%LZ")}
+      elsif Secret === o
+        o.dump
       else
         raise EncodeError, "unsupported #{o}"
       end
@@ -78,6 +110,8 @@ module Toygun
           v.inject(Set.new) {|s, o| s.add(parse_one(o));s }
         elsif k == "Symbol"
           v.to_sym
+        elsif k == "Secret"
+          Secret.parse(v)
         else
           raise DecodeError, "special unsupported #{o}"
         end
@@ -102,8 +136,8 @@ module Toygun
     end
   end
 
-  class JsonObjectCodec < Codec
-    def dump_json(o)
+  class RecordCodec < Codec
+    def dump(o)
       h = o.inject({}) {|h, (k,v)| h.merge(dump_field(k,v))}
     end
 
@@ -111,7 +145,7 @@ module Toygun
       {k => dump_one(v)}
     end
 
-    def parse_json(json)
+    def parse(json)
       json.inject({}) {|h, (k,v)| h.merge(parse_field(k,v))}
     end
 

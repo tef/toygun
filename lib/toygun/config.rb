@@ -1,8 +1,5 @@
 module Toygun
-  module Config
-
-    def self.keyring
-      JSON.parse(Config.keyring)
-    end
+  def self.keychain
+    JSON.parse(::Config.keychain)
   end
 end

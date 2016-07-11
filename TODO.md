@@ -24,8 +24,8 @@
 	- [x] redis lock
 	- [x] worker / clock (send uuids in queue)
 	- [x] encoded queues {header:v, header:v, body: {msg}}
-	- [ ] ttl in header
-	- [ ] encrypted queues
+	- [x] encrypted queues
+	- [x] ttl in header
 	- [ ] scheduler (registry) / try_exclusively
 	- [ ] single worker (inspecting scheduler)
 	- [ ] timeouts
@@ -50,9 +50,9 @@
 
 - [ ] encryption (aka attr_vault)
 	- [x] fernet
-	- [ ] config glue
-	- [ ] keyring/Config/rotation {0:fernet_key, 1:...}
-	- [ ] EncryptedQueue
+	- [x] config glue
+	- [x] keyring/Config/rotation {0:fernet_key, 1:...}
+	- [x] EncryptedQueue
 	- [ ] encrypted_field
 
 - [ ] api server / client
