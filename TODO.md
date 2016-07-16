@@ -53,7 +53,7 @@
 	- [ ] timeouts
 	- [ ] threading
 	- [ ] worker partitoning / priority / worker leases
-	- [ ] rate limiting
+	- [ ] rate limiting / tick quotas (time usage ala cpu scheduling)
 	- [ ] error handling
 
 - [ ] json attrs
@@ -90,14 +90,24 @@
 		
 	think about mute/pausing up front
 	think about pager controls/pager aggregation
+
+	alarm: uuid, foreign_uuid, name,
+		action (page/business_hrs/ignore)/severity
+		state (new, active, open, snooze, closed)
+	exceptions esque? subtype by name
 	- [ ] task or resource can have multiple types of alarm attached
 	- [ ] active / snooze / closed life cycle
 	- [ ] email, pd, slack
+	recover do ... end 
 - [ ] availability / restarting life cycle
 	online/offline/uncertain/known_offline
 	restarting 
 
 - [ ] states
+	- [ ] timeout on pause, go to TIMEOUT 
+	- [ ] __exit__ state for cleanup (alarms, also aborts (deallocating)
+	- [ ] triggers? (alarm checks, task ticks)
+	      idea of Tickable, and you inspect rather than call tick
 	- [ ] customizable archival / expiry
 	- [ ] use upserts and avoid advisory locking
 	- [ ] start_every (using bucket) / scheduler
@@ -119,6 +129,9 @@
 	      model, i.e task panics goes up ownership chain until handled
 	- [ ] tasks is *active* tasks
 	- [ ] task :__new__, task :__stop__ as overrides for start/stop behaviour
+
+- [ ] tickets ?
+	i.e notices/notifications
 
 # environment/ecosystem/support/examples
 
@@ -145,7 +158,9 @@
 - [ ] plugins / layering
 	- [x] create resources directory
 	- [x] attr becomes a sequel plugin
-	- [ ] layers: modules (state), plugins (attr&renamable sti), models (resources/tasks)
+	- [ ] state module becomes a plugin, takes transition table, field name argumentss
+	- [ ] resource (attrs+state+task+scheduler) becomes an example model
+	- [ ] layers: modules (state), plugins (attr), models (resources/tasks)
 	- [ ] resource as a plugin eventually
 	- [ ] leave open door for custom resource/task combos.
 
@@ -158,3 +173,12 @@
 	maybe foo.task.start foo.task.running? Foo.create() start sets state to new & calls create
 	then if __new__ transition to latest in tick
 
+	transition foo, "a message to log"
+
+- ideas
+
+	monitoring/alerting/playbooks/recovery progression
+
+	i.e install it, monitor things, categorise services
+
+	then provision/automate
