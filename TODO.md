@@ -49,15 +49,18 @@
 
 - [ ] scheduler
 	- [ ] scheduler (dataset/queue registry) / try_exclusively
-	- [ ] single worker (inspecting scheduler)
 	- [ ] timeouts
 	- [ ] threading
+	- [ ] single worker (inspecting scheduler)
 	- [ ] worker partitoning / priority / worker leases
 	- [ ] rate limiting / tick quotas (time usage ala cpu scheduling)
 	- [ ] error handling
+	- [ ] Tickable
 
 - [ ] json attrs
 	- [ ] field names are checked on save/restore (and thus create/transition)
+		maybe move things found into a "__lost_found__" attr
+		don't let unknown fields get written down
 	- [ ] field schemas are versioned (backfil/write-up)
 	- [ ] `field :name, type: Class` optional typecheck
 
@@ -71,6 +74,7 @@
 	- [ ] bouncer / auth
 	- [ ] cli client / slack bot
 	- [ ] caching
+	- [ ] py/js api 
 
 - [ ] logging / metrics / errors
 	- [ ] log table
@@ -78,30 +82,6 @@
 	- [ ] queue/tick metrics (max ticks, worker throughput)
 	- [ ] error handling / rollbar
 	- [ ] notifications
-
-# framework
-
-- [ ] alarms/panics
-	i.e task panic/alarm merge
-		alarm :panic do state == PANIC end
-		alarm :timeout do state == TIMEOUT end
-		alarm :stuck page_when: do .... end
-		warning :stuck .... do ... end
-		
-	think about mute/pausing up front
-	think about pager controls/pager aggregation
-
-	alarm: uuid, foreign_uuid, name,
-		action (page/business_hrs/ignore)/severity
-		state (new, active, open, snooze, closed)
-	exceptions esque? subtype by name
-	- [ ] task or resource can have multiple types of alarm attached
-	- [ ] active / snooze / closed life cycle
-	- [ ] email, pd, slack
-	recover do ... end 
-- [ ] availability / restarting life cycle
-	online/offline/uncertain/known_offline
-	restarting 
 
 - [ ] states
 	- [ ] timeout on pause, go to TIMEOUT 
@@ -113,7 +93,55 @@
 	- [ ] start_every (using bucket) / scheduler
 	- [ ] circuit breaking
 	- [ ] renames
-	- [ ] panic support
+
+- [ ] errors, alarms
+	before: resources had alarms (as tasks)
+		tasks had task panics (by action)
+	instead:
+		tasks have errors
+			uuid, resource_uuid, task_uuid, error_name, timestamp, attrs
+		resources have error reporters
+			uuid, resource_uuid, action, task_uuid, error_uuid?, state, attrs
+
+	maybe error stored as obj in attrs, not table
+	or err stored in transitions
+
+	subclass error to make custom errors in tasks
+		class MissingPrimary < Err ... end
+	task errors by calling panic with class
+		panic Class, "message"
+		default err for string panics
+	task transitions to panic state, creates error
+		saves error in attrs, clear on transition out
+		(or move to last_error)
+
+	so, resource tick can do something if task is in panic
+	
+	tasks define alarms :error, :timeout,	
+	task alarms get passed in active task if it exists
+	alarm :failover_error do failover_task.state == ERROR end		
+
+	resources can have alarms
+		like taskpanics, but with a link to resource + optionally
+		task or error. state machine indicates success of 
+		alarm process (like pager duty)
+		open/close/ignore/unignore methods
+	alarms can have triggers/start when/stop/when
+
+
+	defining a task creates an alarm for that task
+		alarm checks if task is running + in panic/timeout
+		pulls error out + opens alarm
+		alarm :
+		
+	should allow: task_stuck alarms
+# framework/model
+
+- [ ] availability / restarting life cycle
+	online/offline/uncertain/known_offline
+	restarting 
+
+- [ ] message templates
 
 - [ ] tasks
 	- [ ] Foo.task is shorthand for T < Task, Foo.add_task(T, :name)
@@ -129,11 +157,13 @@
 	      model, i.e task panics goes up ownership chain until handled
 	- [ ] tasks is *active* tasks
 	- [ ] task :__new__, task :__stop__ as overrides for start/stop behaviour
+	- [ ] archival, task :__gc__ cleans up old tasks/transitions/errors
 
 - [ ] tickets ?
 	i.e notices/notifications
 
 # environment/ecosystem/support/examples
+
 
 - [ ] specs
 	- [ ] queue
@@ -159,7 +189,7 @@
 	- [x] create resources directory
 	- [x] attr becomes a sequel plugin
 	- [ ] state module becomes a plugin, takes transition table, field name argumentss
-	- [ ] resource (attrs+state+task+scheduler) becomes an example model
+	- [ ] resource (tickable+attrs+state+task+scheduler) becomes an example model
 	- [ ] layers: modules (state), plugins (attr), models (resources/tasks)
 	- [ ] resource as a plugin eventually
 	- [ ] leave open door for custom resource/task combos.
@@ -182,3 +212,13 @@
 	i.e install it, monitor things, categorise services
 
 	then provision/automate
+
+deconstructing an object to allow it to be
+	serializable
+	re-entrant
+- resources as objects
+- tasks as methods
+- fields as attributes
+- panics as exceptions
+
+
